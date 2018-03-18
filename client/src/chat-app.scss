@@ -1,0 +1,72 @@
+// eos global variables, will replace/modify bootstrap configuration
+@import "./vars";
+
+// Use ":global" to avoid CSS Module names generated for/from
+// bootstrap classes (i.e. col-sg-5_HASH). We use bootstrap
+// directly without CSS Modules
+:global {
+  // see: https://getbootstrap.com/docs/4.0/getting-started/theming/#sass
+  @import "./layout/bootstrap/scss/bootstrap-reboot";
+  @import "./layout/bootstrap/scss/bootstrap-grid";
+  @import "./layout/bootstrap/scss/utilities";
+
+  body {
+    color: $color-four;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f2f2f2;
+  }
+}
+
+//
+.AppFrame {
+  background-color: $color-one;
+  padding: 1rem 2rem;
+}
+
+.Header {
+  background-color: $color-two;
+  margin-bottom: 1rem;
+
+  h1 {
+    font-size: 36px;
+    font-weight: normal;
+    color: $color-three;
+  }
+}
+
+.ChannelCard {
+  background-color: $color-five;
+  margin-bottom: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+
+  &.active {
+    background-color: $color-three;
+    color: $color-one;
+
+    .lastMessageAbstract {
+      color: $color-one;
+    }
+  }
+
+  .UnreadMessageCounter {
+    background-color: $color-seven;
+    color: $color-one;
+    border-radius: 8px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  h1 {
+    font-size: 1rem;
+  }
+
+  .lastMessageAbstract {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.8rem;
+    color: $color-six;
+  }
+}

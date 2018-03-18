@@ -43,6 +43,6 @@ module.exports = {
       { enforce: "pre", test: /\.js$/, loader: "source-map-loader" }
     ]
   },
-  plugins: [new ExtractTextPlugin("styles-app-two.css")],
-  devtool: "inline-source-map"
+  plugins: [new ExtractTextPlugin("styles-chat-app.css")],
+  devtool: "source-map"
 };

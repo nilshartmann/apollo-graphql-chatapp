@@ -1,49 +1,83 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import * as styles from "./App.scss";
-import HelloMessage from "./HelloMessage";
-import GreetingList from "./GreetingList";
-import { Greeting } from "./types";
+import * as styles from "./chat-app.scss";
+import * as classNames from "classnames";
 
-interface AppState {
-  greetings: Greeting[];
+import { Grid, Row, Col } from "./layout";
+
+export default function App() {
+  return (
+    <Grid className={styles.AppFrame}>
+      <Row className={styles.Header} align="center">
+        <Col>
+          <h1>GraphQL Chat App</h1>
+        </Col>
+        <Col xs="auto">
+          <h3>Klaus</h3>
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={3}>
+          <ChannelCard
+            title="Channel 1"
+            author="Peter"
+            lastMessage="Lorem ipsum laber laber"
+            date="12.03.2018 13:21"
+            unreadMessageCount={3}
+          />
+          <ChannelCard
+            title="Channel 2"
+            author="Klaus"
+            lastMessage="Veniam quis cow venison andouille, pork loin lorem rump duis kevin swine magna prosciutto. "
+            date="12.03.2018 13:21"
+            active={true}
+          />
+          <ChannelCard
+            title="Channel 3"
+            author="Susi"
+            lastMessage="Qui robust, arabica half and half, et cultivar"
+            date="12.03.2018 13:21"
+          />
+          <ChannelCard title="Channel 4" author="Peter" lastMessage="Lorem ipsum laber laber" date="12.03.2018 13:21" />
+        </Col>
+        <Col>Ipsum</Col>
+      </Row>
+    </Grid>
+  );
 }
 
-let counter = 0;
+interface ChannelCardProps {
+  title: string;
+  author: string;
+  lastMessage: string;
+  date: string;
+  active?: boolean;
+  unreadMessageCount?: number;
+}
+function ChannelCard({ title, active = false, author, lastMessage, date, unreadMessageCount }: ChannelCardProps) {
+  const classnames = classNames(styles.ChannelCard, { [styles.active]: active });
 
-export default class App extends React.Component<{}, AppState> {
-  state: AppState = { greetings: [] };
-  render() {
-    return (
-      <div className={styles.app}>
-        <h1>Application two</h1>
-        <p>Running React {React.version}</p>
-        <HelloMessage onAdd={this.addGreeting} greeting="Hello" />
+  return (
+    <Row className={classnames}>
+      <Col>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <Row>
+            <Col>
+              <h1>{title}</h1>
+            </Col>
+            {unreadMessageCount && (
+              <Col xs="auto">
+                <div className={styles.UnreadMessageCounter}>{unreadMessageCount}</div>
+              </Col>
+            )}
+          </Row>
 
-        <GreetingList
-          greetings={this.state.greetings}
-          onRemove={this.removeGreeting}
-        />
-      </div>
-    );
-  }
-
-  removeGreeting = (greeting: Greeting) => {
-    const existingGreetings = [...this.state.greetings];
-    const index = existingGreetings.indexOf(greeting);
-    existingGreetings.splice(index, 1);
-    this.setState({ greetings: existingGreetings });
-  };
-
-  addGreeting = (newGreeting: string) => {
-    const newGreetings = [
-      ...this.state.greetings,
-      { greeting: newGreeting, id: counter++ }
-    ];
-
-    this.setState({
-      greetings: newGreetings
-    });
-  };
+          <div className={styles.lastMessageAbstract}>
+            {author}: {lastMessage}
+          </div>
+        </div>
+      </Col>
+    </Row>
+  );
 }

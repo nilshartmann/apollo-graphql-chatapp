@@ -1,8 +1,12 @@
-import React from "react";
+import * as React from "react";
 
-import classNames from "classnames";
+import * as classNames from "classnames";
+interface RowProps extends React.HTMLProps<{}> {
+  align?: string;
+  justify?: string;
+}
 
-export default function Row({ children, style, align, justify, className }) {
+export default function Row({ children, style, align, justify, className }: RowProps) {
   const cn = ["row"];
 
   if (align) {
