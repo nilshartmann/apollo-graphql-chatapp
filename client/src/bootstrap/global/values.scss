@@ -1,0 +1,54 @@
+$color-alpha: #9e2b12;
+$color-beta: #666366;
+$color-gamma: #ffffff;
+$color-delta: #000000;
+
+$color-beta-90: mix($color-beta, white, 90%);
+$color-beta-80: mix($color-beta, white, 80%);
+$color-beta-60: mix($color-beta, white, 60%);
+$color-beta-40: mix($color-beta, white, 40%);
+$color-beta-20: mix($color-beta, white, 20%);
+$color-beta-15: mix($color-beta, white, 15%);
+$color-beta-10: mix($color-beta, white, 10%);
+$color-beta-5: mix($color-beta, white, 5%);
+
+$background-color: $color-beta-15;
+
+// TODO: Deprecate - replace with grid-gutter-width?!
+$grid: 7px;
+$font-size: $grid * 2;
+$line-height: 1.4em;
+
+$container-max-widths: (sm: 540px, md: 750px, lg: 970px, xl: 1200px) !default;
+
+$grid-columns: 24 !default;
+$grid-gutter-width: 28px !default;
+
+$successBordercolor: #5cb85c;
+$infoBordercolor: #6696e9;
+$warningBordercolor: #f0ad4e;
+$errorBordercolor: $color-alpha;
+
+@mixin successColor {
+  color: #4dad4a;
+}
+
+@mixin successBorder {
+  border: solid 1px $successBordercolor;
+}
+
+@mixin warningColor {
+  color: #f0ad4e;
+}
+
+@mixin warningBorder {
+  border: solid 1px $warningBordercolor;
+}
+
+@mixin errorColor {
+  color: mix($color-alpha, black, 90%);
+}
+
+@mixin errorBorder {
+  border: solid 1px $errorBordercolor;
+}
