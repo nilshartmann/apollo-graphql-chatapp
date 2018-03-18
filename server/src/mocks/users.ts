@@ -1,35 +1,35 @@
 const users = [
   {
     id: "u1",
-    name: "Klaus"
-  },
-  {
-    id: "u2",
     name: "Susi"
   },
   {
+    id: "u2",
+    name: "Klaus"
+  },
+  {
     id: "u3",
-    name: "Peter"
+    name: "Harry"
   },
   {
     id: "u4",
-    name: "Maja"
+    name: "Peter"
   },
   {
     id: "u5",
-    name: "Douglas"
+    name: "Maja"
   },
   {
     id: "u6",
-    name: "Heribert"
+    name: "Sue"
   },
   {
     id: "u7",
-    name: "Jens"
+    name: "Olivia"
   },
   {
     id: "u8",
-    name: "Bernd"
+    name: "Cathy"
   }
 ];
 

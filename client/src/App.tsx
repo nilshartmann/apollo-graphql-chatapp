@@ -6,9 +6,10 @@ import * as classNames from "classnames";
 
 import { Grid, Row, Col } from "./layout";
 
+import Channels from "./Channels";
 export default function App() {
   return (
-    <Grid className={styles.AppFrame}>
+    <Grid className={styles.AppFrame} style={{}}>
       <Row className={styles.Header} align="center">
         <Col>
           <h1>GraphQL Chat App</h1>
@@ -17,67 +18,66 @@ export default function App() {
           <h3>Klaus</h3>
         </Col>
       </Row>
-      <Row>
-        <Col xs={3}>
-          <ChannelCard
-            title="Channel 1"
-            author="Peter"
-            lastMessage="Lorem ipsum laber laber"
-            date="12.03.2018 13:21"
-            unreadMessageCount={3}
-          />
-          <ChannelCard
-            title="Channel 2"
-            author="Klaus"
-            lastMessage="Veniam quis cow venison andouille, pork loin lorem rump duis kevin swine magna prosciutto. "
-            date="12.03.2018 13:21"
-            active={true}
-          />
-          <ChannelCard
-            title="Channel 3"
-            author="Susi"
-            lastMessage="Qui robust, arabica half and half, et cultivar"
-            date="12.03.2018 13:21"
-          />
-          <ChannelCard title="Channel 4" author="Peter" lastMessage="Lorem ipsum laber laber" date="12.03.2018 13:21" />
+      <Row className={styles.Main}>
+        <Col xs={3} style={{ overflowY: "auto", height: "100%" }}>
+          <Channels />
         </Col>
-        <Col>Ipsum</Col>
+        <Col style={{ overflowY: "auto", height: "100%" }}>
+          <Channel title="Channel 3" messages={channels[0].messages} />
+        </Col>
+      </Row>
+
+      <Row className={styles.Footer} align="center">
+        <Col>
+          <h3>https:github.com/nilshartmann/apollo-graphql-chatapp</h3>
+        </Col>
       </Row>
     </Grid>
   );
 }
+import channels from "../../server/src/mocks/channels";
 
-interface ChannelCardProps {
-  title: string;
-  author: string;
-  lastMessage: string;
-  date: string;
-  active?: boolean;
-  unreadMessageCount?: number;
+interface User {
+  id: string;
+  name: string;
 }
-function ChannelCard({ title, active = false, author, lastMessage, date, unreadMessageCount }: ChannelCardProps) {
-  const classnames = classNames(styles.ChannelCard, { [styles.active]: active });
 
+interface Message {
+  id: string;
+  text: string;
+  date: string;
+  author: User;
+}
+
+interface ChannelProps {
+  title: string;
+  messages: Message[];
+}
+
+import * as moment from "moment";
+
+const readableDate = (date: string) => moment(date).format("D. MMMM, H:mm");
+
+function Channel({ title, messages }: ChannelProps) {
   return (
-    <Row className={classnames}>
-      <Col>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <Row>
-            <Col>
-              <h1>{title}</h1>
-            </Col>
-            {unreadMessageCount && (
-              <Col xs="auto">
-                <div className={styles.UnreadMessageCounter}>{unreadMessageCount}</div>
-              </Col>
-            )}
-          </Row>
-
-          <div className={styles.lastMessageAbstract}>
-            {author}: {lastMessage}
-          </div>
-        </div>
-      </Col>
-    </Row>
+    <div className={styles.Channel}>
+      <Row className={styles.Title}>
+        <Col>
+          <h1>{title}</h1>
+        </Col>
+      </Row>
+      {messages.map(message => (
+        <Row className={styles.Message}>
+          <Col xs={2}>
+            <img src={`/avatars/${message.author.id}.svg`} />
+          </Col>
+          <Col>
+            <h1>{message.author.name}</h1>
+            {message.text}
+            <div className={styles.Date}>{readableDate(message.date)}</div>
+          </Col>
+        </Row>
+      ))}
+    </div>
   );
 }

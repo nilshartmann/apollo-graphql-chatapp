@@ -8,10 +8,13 @@ const channels = [
     members: [users[0], users[1], users[2]],
     messages: [
       { id: "m1", author: users[0], date: "2018-01-03T09:12:31+01:00", text: lorems.bacon[0] },
-      { id: "m2", author: users[5], date: "2018-01-04T09:12:31+01:00", text: lorems.bacon[1] },
-      { id: "m3", author: users[1], date: "2018-01-05T09:17:31+01:00", text: lorems.bacon[2] },
+      { id: "m2", author: users[1], date: "2018-01-04T09:12:31+01:00", text: lorems.bacon[1] },
+      { id: "m3", author: users[2], date: "2018-01-05T09:17:31+01:00", text: lorems.bacon[2] },
       { id: "m4", author: users[3], date: "2018-01-05T10:13:31+01:00", text: lorems.bacon[3] },
-      { id: "m5", author: users[2], date: "2018-01-06T11:15:31+01:00", text: lorems.bacon[4] }
+      { id: "m5", author: users[4], date: "2018-01-06T11:15:31+01:00", text: lorems.bacon[4] },
+      { id: "m6", author: users[5], date: "2018-02-12T08:37:31+01:00", text: lorems.bacon[5] },
+      { id: "m7", author: users[6], date: "2018-02-12T08:42:15+01:00", text: lorems.bacon[6] },
+      { id: "m8", author: users[7], date: "2018-02-12T08:59:42+01:00", text: lorems.bacon[4] }
     ]
   },
   {
