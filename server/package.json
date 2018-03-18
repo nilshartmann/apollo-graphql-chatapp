@@ -18,14 +18,16 @@
   ],
   "scripts": {
     "build": "tsc",
-    "watch": "tsc --watch",
-    "start": "node dist/main.js",
+    "compile:watch": "tsc --watch",
+    "start": "nodemon",
     "clean": "rimraf dist/",
     "prettier": "prettier --write \"{src}/**/*.{js,jsx,ts,tsx}\""
   },
   "devDependencies": {
+    "nodemon": "^1.17.2",
     "prettier": "^1.11.0",
     "rimraf": "^2.6.2",
+    "ts-node": "^5.0.1",
     "typescript": "^2.7.2"
   },
   "dependencies": {

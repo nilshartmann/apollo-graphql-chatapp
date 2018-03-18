@@ -1,10 +1,61 @@
-class Hello {
-  constructor(public name: string) {}
+const express = require("express");
+const bodyParser = require("body-parser");
+const { graphqlExpress, graphiqlExpress } = require("apollo-server-express");
+const { makeExecutableSchema } = require("graphql-tools");
+import users from "./mocks/users";
+import channels from "./mocks/channels";
 
-  sayHello(g: string) {
-    return `${g}, ${this.name}`;
+// The GraphQL schema in string form
+const typeDefs = `
+  type User {
+    id: String!,
+
+    """The readable name"""
+    name: String!
   }
-}
 
-const h = new Hello("Nils");
-console.log(h.sayHello("Hello"));
+  type Channel {
+    id: String!
+
+    title: String!
+    members: [User!]!
+    messages: [Message!]!
+  }
+
+  type Message {
+    id: String!
+    author: User!
+    date: String!
+    text: String!
+  }
+
+  type Query { channels: [Channel!]!, users: [User!]! }
+`;
+
+// The resolvers
+const resolvers = {
+  Query: {
+    channels: () => channels,
+    users: () => users
+  }
+};
+
+// Put together a schema
+const schema = makeExecutableSchema({
+  typeDefs,
+  resolvers
+});
+
+// Initialize the app
+const app = express();
+
+// The GraphQL endpoint
+app.use("/graphql", bodyParser.json(), graphqlExpress({ schema }));
+
+// GraphiQL, a visual editor for queries
+app.use("/graphiql", graphiqlExpress({ endpointURL: "/graphql" }));
+
+// Start the server
+app.listen(3000, () => {
+  console.log("Go to http://localhost:3000/graphiql to run queries!");
+});
