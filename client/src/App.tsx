@@ -10,7 +10,7 @@ import ChannelList from "./ChannelList";
 import Channel from "./Channel";
 
 import channels from "../../server/src/mocks/channels";
-
+import { Switch, Route, Redirect } from "react-router-dom";
 const HOME = "https://github.com/nilshartmann/apollo-graphql-chatapp";
 
 export default function App() {
@@ -24,14 +24,24 @@ export default function App() {
           <h3>Klaus</h3>
         </Col>
       </Row>
-      <Row className={styles.Main}>
-        <Col xs={3} style={{ overflowY: "auto", height: "100%" }}>
-          <ChannelList />
-        </Col>
-        <Col style={{ overflowY: "auto", height: "100%" }}>
-          <Channel title={channels[0].title} messages={channels[0].messages} />
-        </Col>
-      </Row>
+
+      <Switch>
+        <Route
+          exact
+          path="/channel/:currentChannelId"
+          render={routerProps => (
+            <Row className={styles.Main}>
+              <Col xs={3} style={{ overflowY: "auto", height: "100%" }}>
+                <ChannelList {...routerProps} />
+              </Col>
+              <Col style={{ overflowY: "auto", height: "100%" }}>
+                <Channel title={channels[0].title} messages={channels[0].messages} {...routerProps} />
+              </Col>
+            </Row>
+          )}
+        />
+        <Route path="/" render={() => <Redirect to="/channel/c1" />} />
+      </Switch>
 
       <Row className={styles.Footer} align="center">
         <Col>

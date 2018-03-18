@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { RouteComponentProps, Link } from "react-router-dom";
 
 import * as styles from "./Channel.scss";
 import * as classNames from "classnames";
@@ -14,13 +15,16 @@ import { Query } from "react-apollo";
 
 import { ChannelQuery, ChannelQueryVariables } from "./__generated__/ChannelQuery";
 
-interface ChannelProps {
+interface ChannelProps extends RouteComponentProps<{ currentChannelId: string }> {
   title: string;
   messages: Message[];
 }
 
-const QUERY = gql`
+const CHANNEL_QUERY = gql`
   query ChannelQuery($channelId: String!) {
+    currentChannel @client {
+      currentChannelId
+    }
     channel(channelId: $channelId) {
       id
       title
@@ -39,10 +43,10 @@ const QUERY = gql`
 
 class ChannelQueryComponent extends Query<ChannelQuery, ChannelQueryVariables> {}
 
-export default function Channel({ title, messages }: ChannelProps) {
+export default function Channel({ title, messages, match }: ChannelProps) {
   return (
     <div className={styles.Channel}>
-      <ChannelQueryComponent query={QUERY} variables={{ channelId: "c1" }}>
+      <ChannelQueryComponent query={CHANNEL_QUERY} variables={{ channelId: match.params.currentChannelId }}>
         {function({ loading, error, data }) {
           if (loading) {
             return (
@@ -66,6 +70,8 @@ export default function Channel({ title, messages }: ChannelProps) {
               </Row>
             );
           }
+
+          console.log("DATA", data);
 
           if (!data || !data.channel) {
             return (

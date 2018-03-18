@@ -17,10 +17,18 @@
     height: 100%;
   }
 
-  // .row {
-  //   margin-left: 0;
-  //   margin-right: 0;
-  // }
+  a {
+    color: $color-four;
+    text-decoration: none;
+
+    &:hover,
+    &:active,
+    &:focus {
+      cursor: pointer;
+      color: $color-four;
+      text-decoration: none;
+    }
+  }
 }
 
 //

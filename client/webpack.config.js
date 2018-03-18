@@ -44,5 +44,8 @@ module.exports = {
     ]
   },
   plugins: [new ExtractTextPlugin("styles-chat-app.css")],
-  devtool: "source-map"
+  devtool: "source-map",
+  devServer: {
+    historyApiFallback: true
+  }
 };

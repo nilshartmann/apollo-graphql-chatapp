@@ -9,6 +9,7 @@ import { gql } from "apollo-boost";
 import { Query } from "react-apollo";
 import { timeOnly } from "./utils";
 import { ChannelListQuery } from "./__generated__/ChannelListQuery";
+import { RouteComponentProps, Link } from "react-router-dom";
 
 const QUERY = gql`
   query ChannelListQuery {
@@ -29,8 +30,8 @@ const QUERY = gql`
 `;
 
 class ChannelListQueryComponent extends Query<ChannelListQuery> {}
-
-export default function ChannelList() {
+interface ChannelListProps extends RouteComponentProps<{ currentChannelId: string }> {}
+export default function ChannelList({ match }: ChannelListProps) {
   return (
     <ChannelListQueryComponent query={QUERY}>
       {function({ loading, error, data = { channels: [] } }) {
@@ -52,10 +53,12 @@ export default function ChannelList() {
             {data.channels.map(channel => (
               <ChannelCard
                 key={channel.id}
+                channelId={channel.id}
                 title={channel.title}
                 author={channel.latestMessage.author.name}
                 lastMessage={channel.latestMessage.text}
                 date={channel.latestMessage.date}
+                active={channel.id === match.params.currentChannelId}
               />
             ))}
           </React.Fragment>
@@ -66,6 +69,7 @@ export default function ChannelList() {
 }
 
 interface ChannelCardProps {
+  channelId: string;
   title: string;
   author: string;
   lastMessage: string;
@@ -74,32 +78,43 @@ interface ChannelCardProps {
   unreadMessageCount?: number;
   draft?: boolean;
 }
-function ChannelCard({ title, active = false, author, lastMessage, date, unreadMessageCount, draft }: ChannelCardProps) {
+function ChannelCard({
+  channelId,
+  title,
+  active = false,
+  author,
+  lastMessage,
+  date,
+  unreadMessageCount,
+  draft
+}: ChannelCardProps) {
   const classnames = classNames(styles.ChannelCard, { [styles.active]: active });
 
   return (
-    <Row className={classnames}>
-      <Col className={styles.Bla}>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <Row>
-            <Col>
-              <h1>{title}</h1>
-            </Col>
-            {unreadMessageCount && (
-              <Col xs="auto">
-                <div className={styles.UnreadMessageCounter}>{unreadMessageCount}</div>
+    <Link to={`/channel/${channelId}`}>
+      <Row className={classnames}>
+        <Col className={styles.Bla}>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <Row>
+              <Col>
+                <h1>{title}</h1>
               </Col>
-            )}
-          </Row>
+              {unreadMessageCount && (
+                <Col xs="auto">
+                  <div className={styles.UnreadMessageCounter}>{unreadMessageCount}</div>
+                </Col>
+              )}
+            </Row>
 
-          <div className={styles.lastMessageAbstract}>
-            <div className={styles.lastMessageAbstractMessage}>
-              {author}: {lastMessage}
+            <div className={styles.lastMessageAbstract}>
+              <div className={styles.lastMessageAbstractMessage}>
+                {author}: {lastMessage}
+              </div>
+              <div className={styles.lastMessageAbstractDate}>{draft ? <span>(Draft)</span> : timeOnly(date)}</div>
             </div>
-            <div className={styles.lastMessageAbstractDate}>{draft ? <span>(Draft)</span> : timeOnly(date)}</div>
           </div>
-        </div>
-      </Col>
-    </Row>
+        </Col>
+      </Row>
+    </Link>
   );
 }
