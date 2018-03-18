@@ -15,11 +15,6 @@ import { Query } from "react-apollo";
 
 import { ChannelQuery, ChannelQueryVariables } from "./__generated__/ChannelQuery";
 
-interface ChannelProps extends RouteComponentProps<{ currentChannelId: string }> {
-  title: string;
-  messages: Message[];
-}
-
 const CHANNEL_QUERY = gql`
   query ChannelQuery($channelId: String!) {
     currentChannel @client {
@@ -43,10 +38,11 @@ const CHANNEL_QUERY = gql`
 
 class ChannelQueryComponent extends Query<ChannelQuery, ChannelQueryVariables> {}
 
-export default function Channel({ title, messages, match }: ChannelProps) {
+interface ChannelProps extends RouteComponentProps<{ currentChannelId: string }> {}
+export default function Channel({ match: { params: { currentChannelId } } }: ChannelProps) {
   return (
     <div className={styles.Channel}>
-      <ChannelQueryComponent query={CHANNEL_QUERY} variables={{ channelId: match.params.currentChannelId }}>
+      <ChannelQueryComponent query={CHANNEL_QUERY} variables={{ channelId: currentChannelId }}>
         {function({ loading, error, data }) {
           if (loading) {
             return (

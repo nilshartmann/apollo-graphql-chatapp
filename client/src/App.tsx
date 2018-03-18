@@ -35,7 +35,7 @@ export default function App() {
                 <ChannelList {...routerProps} />
               </Col>
               <Col style={{ overflowY: "auto", height: "100%" }}>
-                <Channel title={channels[0].title} messages={channels[0].messages} {...routerProps} />
+                <Channel {...routerProps} />
               </Col>
             </Row>
           )}
