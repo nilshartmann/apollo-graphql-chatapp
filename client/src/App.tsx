@@ -7,6 +7,9 @@ import * as classNames from "classnames";
 import { Grid, Row, Col } from "./layout";
 
 import Channels from "./Channels";
+
+const HOME = "https://github.com/nilshartmann/apollo-graphql-chatapp";
+
 export default function App() {
   return (
     <Grid className={styles.AppFrame} style={{}}>
@@ -23,13 +26,17 @@ export default function App() {
           <Channels />
         </Col>
         <Col style={{ overflowY: "auto", height: "100%" }}>
-          <Channel title="Channel 3" messages={channels[0].messages} />
+          <Channel title={channels[0].title} messages={channels[0].messages} />
         </Col>
       </Row>
 
       <Row className={styles.Footer} align="center">
         <Col>
-          <h3>https:github.com/nilshartmann/apollo-graphql-chatapp</h3>
+          <h3>
+            <a href={HOME} target="_blank">
+              {HOME}
+            </a>
+          </h3>
         </Col>
       </Row>
     </Grid>
