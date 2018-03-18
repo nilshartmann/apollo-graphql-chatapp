@@ -1,11 +1,11 @@
 import * as React from "react";
 
-import * as styles from "./Channels.scss";
+import * as styles from "./ChannelList.scss";
 import * as classNames from "classnames";
 
 import { Row, Col } from "./layout";
 
-export default function Channels() {
+export default function ChannelList() {
   return (
     <React.Fragment>
       <ChannelCard

@@ -1,12 +1,15 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import * as styles from "./chat-app.scss";
+import * as styles from "./App.scss";
 import * as classNames from "classnames";
 
 import { Grid, Row, Col } from "./layout";
 
-import Channels from "./Channels";
+import ChannelList from "./ChannelList";
+import Channel from "./Channel";
+
+import channels from "../../server/src/mocks/channels";
 
 const HOME = "https://github.com/nilshartmann/apollo-graphql-chatapp";
 
@@ -23,7 +26,7 @@ export default function App() {
       </Row>
       <Row className={styles.Main}>
         <Col xs={3} style={{ overflowY: "auto", height: "100%" }}>
-          <Channels />
+          <ChannelList />
         </Col>
         <Col style={{ overflowY: "auto", height: "100%" }}>
           <Channel title={channels[0].title} messages={channels[0].messages} />
@@ -40,51 +43,5 @@ export default function App() {
         </Col>
       </Row>
     </Grid>
-  );
-}
-import channels from "../../server/src/mocks/channels";
-
-interface User {
-  id: string;
-  name: string;
-}
-
-interface Message {
-  id: string;
-  text: string;
-  date: string;
-  author: User;
-}
-
-interface ChannelProps {
-  title: string;
-  messages: Message[];
-}
-
-import * as moment from "moment";
-
-const readableDate = (date: string) => moment(date).format("D. MMMM, H:mm");
-
-function Channel({ title, messages }: ChannelProps) {
-  return (
-    <div className={styles.Channel}>
-      <Row className={styles.Title}>
-        <Col>
-          <h1>{title}</h1>
-        </Col>
-      </Row>
-      {messages.map(message => (
-        <Row className={styles.Message}>
-          <Col xs={2}>
-            <img src={`/avatars/${message.author.id}.svg`} />
-          </Col>
-          <Col>
-            <h1>{message.author.name}</h1>
-            {message.text}
-            <div className={styles.Date}>{readableDate(message.date)}</div>
-          </Col>
-        </Row>
-      ))}
-    </div>
   );
 }
