@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const { graphqlExpress, graphiqlExpress } = require("apollo-server-express");
 const { makeExecutableSchema } = require("graphql-tools");
 import users from "./mocks/users";
@@ -20,6 +21,8 @@ const typeDefs = `
     title: String!
     members: [User!]!
     messages: [Message!]!
+
+    latestMessage: Message!
   }
 
   type Message {
@@ -29,14 +32,47 @@ const typeDefs = `
     text: String!
   }
 
-  type Query { channels: [Channel!]!, users: [User!]! }
+  type Query { 
+    channels: [Channel!]!, users: [User!]! 
+    channel(channelId: String!): Channel
+  }
 `;
+
+interface User {
+  id: string;
+  name: string;
+}
+
+interface Channel {
+  id: string;
+  title: string;
+  messages: Message[];
+}
+
+interface Message {
+  id: string;
+  text: string;
+  date: string;
+  author: User;
+}
 
 // The resolvers
 const resolvers = {
   Query: {
     channels: () => channels,
+    channel: (obj: any, args: { channelId: string }) => channels.find(c => c.id === args.channelId),
     users: () => users
+  },
+  Channel: {
+    latestMessage: (obj: Channel) =>
+      obj.messages.reduce((prev: Message, curr: Message) => {
+        const d1 = new Date(prev.date).getTime();
+        const d2 = new Date(curr.date).getTime();
+        if (d2 > d1) {
+          return curr;
+        }
+        return prev;
+      })
   }
 };
 
@@ -48,6 +84,8 @@ const schema = makeExecutableSchema({
 
 // Initialize the app
 const app = express();
+
+app.use(cors());
 
 // The GraphQL endpoint
 app.use("/graphql", bodyParser.json(), graphqlExpress({ schema }));

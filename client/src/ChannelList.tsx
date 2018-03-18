@@ -5,31 +5,63 @@ import * as classNames from "classnames";
 
 import { Row, Col } from "./layout";
 
+import { gql } from "apollo-boost";
+import { Query } from "react-apollo";
+import { timeOnly } from "./utils";
+import { ChannelListQuery } from "./__generated__/ChannelListQuery";
+
+const QUERY = gql`
+  query ChannelListQuery {
+    channels {
+      id
+      title
+      latestMessage {
+        id
+        date
+        author {
+          id
+          name
+        }
+        text
+      }
+    }
+  }
+`;
+
+class ChannelListQueryComponent extends Query<ChannelListQuery> {}
+
 export default function ChannelList() {
   return (
-    <React.Fragment>
-      <ChannelCard
-        title="Channel 1"
-        author="Peter"
-        lastMessage="Lorem ipsum laber laber"
-        date="12.03.2018 13:21"
-        unreadMessageCount={3}
-      />
-      <ChannelCard
-        title="Channel 2"
-        author="Klaus"
-        lastMessage="Veniam quis cow venison andouille, pork loin lorem rump duis kevin swine magna prosciutto. "
-        date="12.03.2018 13:21"
-        active={true}
-      />
-      <ChannelCard
-        title="Channel 3"
-        author="Susi"
-        lastMessage="Qui robust, arabica half and half, et cultivar"
-        date="12.03.2018 13:21"
-      />
-      <ChannelCard title="Channel 4" author="Peter" lastMessage="Lorem ipsum laber laber" date="12.03.2018 13:21" draft />
-    </React.Fragment>
+    <ChannelListQueryComponent query={QUERY}>
+      {function({ loading, error, data = { channels: [] } }) {
+        if (error) {
+          return (
+            <div>
+              <h1>Error</h1>
+              <pre>{JSON.stringify(error)}</pre>
+            </div>
+          );
+        }
+
+        if (loading) {
+          return <h1>Please wait</h1>;
+        }
+
+        return (
+          <React.Fragment>
+            {data.channels.map(channel => (
+              <ChannelCard
+                key={channel.id}
+                title={channel.title}
+                author={channel.latestMessage.author.name}
+                lastMessage={channel.latestMessage.text}
+                date={channel.latestMessage.date}
+              />
+            ))}
+          </React.Fragment>
+        );
+      }}
+    </ChannelListQueryComponent>
   );
 }
 
@@ -64,7 +96,7 @@ function ChannelCard({ title, active = false, author, lastMessage, date, unreadM
             <div className={styles.lastMessageAbstractMessage}>
               {author}: {lastMessage}
             </div>
-            <div className={styles.lastMessageAbstractDate}>{draft ? <span>(Draft)</span> : date}</div>
+            <div className={styles.lastMessageAbstractDate}>{draft ? <span>(Draft)</span> : timeOnly(date)}</div>
           </div>
         </div>
       </Col>
