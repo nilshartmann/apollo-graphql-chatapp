@@ -29,6 +29,15 @@
       text-decoration: none;
     }
   }
+
+  input,
+  input:active,
+  input:focus,
+  textarea,
+  textarea:active,
+  textarea:focus {
+    outline: none;
+  }
 }
 
 //

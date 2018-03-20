@@ -31,4 +31,53 @@
       font-weight: lighter;
     }
   }
+
+  .Editor {
+    @include card();
+    margin-left: 0.5rem;
+    margin-right: 0px;
+
+    background-color: $color-five;
+    color: $color-six;
+
+    .Form {
+      display: flex;
+    }
+    textarea {
+      background-color: $color-one;
+      color: $color-six;
+      border: 0;
+
+      flex-basis: 0;
+      flex-grow: 1;
+      max-width: 100%;
+    }
+
+    button {
+      border: 0;
+      background-color: $color-six;
+      color: $color-one;
+      cursor: pointer;
+
+      width: auto;
+      max-width: none;
+      flex: 0 0 auto;
+      outline: none;
+
+      &:hover,
+      &:active &:focus {
+        outline: none;
+      }
+
+      &:hover {
+        background-color: lighten($color-six, 10%);
+      }
+
+      &:disabled {
+        cursor: default;
+        color: lighten($color-one, 10%);
+        background-color: lighten($color-six, 10%);
+      }
+    }
+  }
 }

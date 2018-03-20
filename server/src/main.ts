@@ -36,6 +36,10 @@ const typeDefs = `
     channels: [Channel!]!, users: [User!]! 
     channel(channelId: String!): Channel
   }
+
+  type Mutation {
+    postMessage(channelId: String!, authorId: String!, message: String!): Message!
+  }
 `;
 
 interface User {
@@ -56,12 +60,38 @@ interface Message {
   author: User;
 }
 
+let messageIdCounter = 10000;
+
 // The resolvers
 const resolvers = {
   Query: {
     channels: () => channels,
     channel: (obj: any, args: { channelId: string }) => channels.find(c => c.id === args.channelId),
     users: () => users
+  },
+  Mutation: {
+    postMessage: (_: any, args: { channelId: string; authorId: string; message: string }) => {
+      const author = users.find(user => user.id === args.authorId);
+      if (!author) {
+        throw new Error(`Author with id ${args.authorId} not found`);
+      }
+      const channel = channels.find(c => c.id === args.channelId);
+      if (!channel) {
+        throw new Error(`Channel with id ${args.authorId} not found`);
+      }
+
+      const newMessage: Message = {
+        id: `m${messageIdCounter++}`,
+        text: args.message,
+        date: new Date().toISOString(),
+        author
+      };
+
+      console.log("New Message", newMessage);
+
+      channel.messages = channel.messages.concat(newMessage);
+      return newMessage;
+    }
   },
   Channel: {
     latestMessage: (obj: Channel) =>
