@@ -9,17 +9,17 @@ import { ApolloCache } from "apollo-cache";
 
 // Pass your GraphQL endpoint to uri
 const client = new ApolloClient({
-  uri: "http://localhost:3000/graphql"
-  // clientState: {
-  //   defaults: {
-  //     draftMessages: [
-  //       {
-  //       __typename: "DraftMessages",
-  //       id: "d1",
-  //       text: "My default draftmessage"
-  //       }
-  //     ]
-  //   },
+  uri: "http://localhost:3000/graphql",
+  clientState: {
+    defaults: {
+      currentUser: {
+        __typename: "CurrentUser",
+        id: "u5",
+        name: "Maja"
+      }
+    },
+    resolvers: []
+  }
   //   resolvers: {
   //     Query: {
   //       draftMessage: (_: any, { channelId }: { channelId: string }, { cache }: { cache: ApolloCache<any> }) => {

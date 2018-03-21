@@ -11,7 +11,9 @@ import { timeOnly } from "./utils";
 import { ChannelListQuery, ChannelListQueryVariables } from "./__generated__/ChannelListQuery";
 import { RouteComponentProps, Link } from "react-router-dom";
 
-const QUERY = gql`
+import CurrentUser from "./CurrentUser";
+
+const CHANNEL_LIST_QUERY = gql`
   query ChannelListQuery($memberId: String) {
     channels(memberId: $memberId) {
       id
@@ -32,44 +34,50 @@ const QUERY = gql`
 class ChannelListQueryComponent extends Query<ChannelListQuery, ChannelListQueryVariables> {}
 interface ChannelListProps extends RouteComponentProps<{ currentChannelId: string }> {}
 export default function ChannelList({ match }: ChannelListProps) {
+  console.log("MATCH", match);
+
   return (
-    <ChannelListQueryComponent
-      query={QUERY}
-      variables={{
-        memberId: "u7"
-      }}
-    >
-      {function({ loading, error, data = { channels: [] } }) {
-        if (error) {
-          return (
-            <div>
-              <h1>Error</h1>
-              <pre>{JSON.stringify(error)}</pre>
-            </div>
-          );
-        }
+    <CurrentUser>
+      {({ id: currentUserId }) => (
+        <ChannelListQueryComponent
+          query={CHANNEL_LIST_QUERY}
+          variables={{
+            memberId: currentUserId
+          }}
+        >
+          {function({ loading, error, data = { channels: [] } }) {
+            if (error) {
+              return (
+                <div>
+                  <h1>Error</h1>
+                  <pre>{JSON.stringify(error)}</pre>
+                </div>
+              );
+            }
 
-        if (loading) {
-          return <h1>Please wait</h1>;
-        }
+            if (loading) {
+              return <h1>Please wait</h1>;
+            }
 
-        return (
-          <React.Fragment>
-            {data.channels.map(channel => (
-              <ChannelCard
-                key={channel.id}
-                channelId={channel.id}
-                title={channel.title}
-                author={channel.latestMessage.author.name}
-                lastMessage={channel.latestMessage.text}
-                date={channel.latestMessage.date}
-                active={channel.id === match.params.currentChannelId}
-              />
-            ))}
-          </React.Fragment>
-        );
-      }}
-    </ChannelListQueryComponent>
+            return (
+              <React.Fragment>
+                {data.channels.map(channel => (
+                  <ChannelCard
+                    key={channel.id}
+                    channelId={channel.id}
+                    title={channel.title}
+                    author={channel.latestMessage.author.name}
+                    lastMessage={channel.latestMessage.text}
+                    date={channel.latestMessage.date}
+                    active={channel.id === match.params.currentChannelId}
+                  />
+                ))}
+              </React.Fragment>
+            );
+          }}
+        </ChannelListQueryComponent>
+      )}
+    </CurrentUser>
   );
 }
 

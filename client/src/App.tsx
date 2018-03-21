@@ -4,14 +4,26 @@ import * as ReactDOM from "react-dom";
 import * as styles from "./App.scss";
 import * as classNames from "classnames";
 
+import { gql } from "apollo-boost";
+import { Query } from "react-apollo";
+
 import { Grid, Row, Col } from "./layout";
 
+import CurrentUser from "./CurrentUser";
 import ChannelList from "./ChannelList";
 import Channel from "./Channel";
 
 import channels from "../../server/src/mocks/channels";
 import { Switch, Route, Redirect } from "react-router-dom";
 const HOME = "https://github.com/nilshartmann/apollo-graphql-chatapp";
+
+const CURRENT_USER_CLIENT_QUERY = gql`
+  query {
+    currentUser @client {
+      name
+    }
+  }
+`;
 
 export default function App() {
   return (
@@ -21,27 +33,31 @@ export default function App() {
           <h1>GraphQL Chat App</h1>
         </Col>
         <Col xs="auto">
-          <h3>Klaus</h3>
+          <CurrentUser>{({ name }) => <h3>{name}</h3>}</CurrentUser>
         </Col>
       </Row>
 
-      <Switch>
+      <Row className={styles.Main}>
+        <Route
+          exact
+          path="/channel/:currentChannelId?"
+          render={routerProps => (
+            <Col xs={3} style={{ overflowY: "auto", height: "100%" }}>
+              <ChannelList {...routerProps} />
+            </Col>
+          )}
+        />
         <Route
           exact
           path="/channel/:currentChannelId"
           render={routerProps => (
-            <Row className={styles.Main}>
-              <Col xs={3} style={{ overflowY: "auto", height: "100%" }}>
-                <ChannelList {...routerProps} />
-              </Col>
-              <Col style={{ overflowY: "auto", height: "100%" }}>
-                <Channel {...routerProps} />
-              </Col>
-            </Row>
+            <Col style={{ overflowY: "auto", height: "100%" }}>
+              <Channel {...routerProps} />
+            </Col>
           )}
         />
-        <Route path="/" render={() => <Redirect to="/channel/c1" />} />
-      </Switch>
+        <Route exact path="/" render={() => <Redirect to="/channel" />} />
+      </Row>
 
       <Row className={styles.Footer} align="center">
         <Col>

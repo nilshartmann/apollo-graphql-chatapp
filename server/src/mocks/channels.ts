@@ -47,7 +47,7 @@ const channels = [
   {
     id: "c4",
     title: "Office Talks",
-    members: [users[7], users[6], users[3]],
+    members: [users[7], users[6], users[3], users[4]],
     messages: [
       { id: "m41", author: users[7], date: "2018-03-05T10:19:31+01:00", text: lorems.office[0] },
       { id: "m42", author: users[7], date: "2018-03-05T10:20:47+01:00", text: lorems.office[1] },
