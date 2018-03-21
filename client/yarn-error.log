@@ -1,5 +1,5 @@
 Arguments: 
-  /Users/nils/.nvm/versions/node/v8.9.3/bin/node /usr/local/Cellar/yarn/1.5.1_1/libexec/bin/yarn.js gql
+  /Users/nils/.nvm/versions/node/v8.9.3/bin/node /usr/local/Cellar/yarn/1.5.1_1/libexec/bin/yarn.js start
 
 PATH: 
   /Users/nils/.nvm/versions/node/v8.9.3/bin:/Users/nils/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/nils/bin
@@ -48,7 +48,7 @@ npm manifest:
     "devDependencies": {
       "@types/webpack-env": "1.13.2",
       "apollo-codegen": "^0.19.0",
-      "awesome-typescript-loader": "3.2.3",
+      "awesome-typescript-loader": "^4.0.1",
       "css-loader": "^0.28.9",
       "extract-text-webpack-plugin": "^3.0.2",
       "file-loader": "^1.1.11",
@@ -522,18 +522,17 @@ Lockfile:
       postcss "^5.2.16"
       postcss-value-parser "^3.2.3"
   
-  awesome-typescript-loader@3.2.3:
-    version "3.2.3"
-    resolved "https://registry.yarnpkg.com/awesome-typescript-loader/-/awesome-typescript-loader-3.2.3.tgz#aa2119b7c808a031e2b28945b031450a8975367f"
+  awesome-typescript-loader@^4.0.1:
+    version "4.0.1"
+    resolved "https://registry.yarnpkg.com/awesome-typescript-loader/-/awesome-typescript-loader-4.0.1.tgz#bddae8183f06eb65184390d596e4342ca2089281"
     dependencies:
-      colors "^1.1.2"
+      chalk "^2.3.1"
       enhanced-resolve "3.3.0"
       loader-utils "^1.1.0"
       lodash "^4.17.4"
       micromatch "^3.0.3"
       mkdirp "^0.5.1"
-      object-assign "^4.1.1"
-      source-map-support "^0.4.15"
+      source-map-support "^0.5.3"
   
   aws-sign2@~0.6.0:
     version "0.6.0"
@@ -906,7 +905,7 @@ Lockfile:
       strip-ansi "^3.0.0"
       supports-color "^2.0.0"
   
-  chalk@^2.1.0, chalk@^2.3.2:
+  chalk@^2.1.0, chalk@^2.3.1, chalk@^2.3.2:
     version "2.3.2"
     resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.3.2.tgz#250dc96b07491bfd601e648d66ddf5f60c7a5c65"
     dependencies:
@@ -1085,10 +1084,6 @@ Lockfile:
       color "^0.11.0"
       css-color-names "0.0.4"
       has "^1.0.1"
-  
-  colors@^1.1.2:
-    version "1.2.1"
-    resolved "https://registry.yarnpkg.com/colors/-/colors-1.2.1.tgz#f4a3d302976aaf042356ba1ade3b1a2c62d9d794"
   
   colors@~1.1.2:
     version "1.1.2"
@@ -4847,13 +4842,7 @@ Lockfile:
       source-map-url "^0.4.0"
       urix "^0.1.0"
   
-  source-map-support@^0.4.15:
-    version "0.4.18"
-    resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.4.18.tgz#0286a6de8be42641338594e97ccea75f0a2c585f"
-    dependencies:
-      source-map "^0.5.6"
-  
-  source-map-support@^0.5.0:
+  source-map-support@^0.5.0, source-map-support@^0.5.3:
     version "0.5.4"
     resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.4.tgz#54456efa89caa9270af7cd624cc2f123e51fbae8"
     dependencies:
@@ -5718,7 +5707,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: sh
-  Arguments: -c yarn gql:schema && yarn gql:codegen
+  Arguments: -c yarn devserver
   Directory: /Users/nils/develop/javascript/apollo-graphql-chatapp/client
   Output:
   
