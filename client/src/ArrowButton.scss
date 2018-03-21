@@ -1,0 +1,11 @@
+.ArrowButton {
+  display: flex;
+  align-items: center;
+  height: 100%;
+
+  img {
+    height: 0.5rem;
+
+    cursor: pointer;
+  }
+}

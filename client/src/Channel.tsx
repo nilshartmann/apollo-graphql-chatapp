@@ -13,7 +13,7 @@ import { Row, Col } from "./layout";
 import { gql, ApolloClient } from "apollo-boost";
 import { Query } from "react-apollo";
 
-import { ChannelQuery, ChannelQueryVariables } from "./__generated__/ChannelQuery";
+import { ChannelQuery, ChannelQueryVariables, ChannelQuery_channel } from "./__generated__/ChannelQuery";
 import {
   PostNewMessageMutation,
   PostNewMessageMutationVariables,
@@ -21,6 +21,7 @@ import {
 } from "./__generated__/PostNewMessageMutation";
 
 import Avatar from "./Avatar";
+import ArrowButton from "./ArrowButton";
 
 const CHANNEL_QUERY = gql`
   query ChannelQuery($channelId: String!) {
@@ -30,6 +31,10 @@ const CHANNEL_QUERY = gql`
     channel(channelId: $channelId) {
       id
       title
+      members {
+        id
+        name
+      }
       messages {
         id
         text
@@ -63,6 +68,40 @@ const POST_NEW_MESSAGE = gql`
     }
   }
 `;
+
+interface ChannelTitleProps {
+  channel: ChannelQuery_channel;
+}
+
+interface ChannelTitleState {
+  expanded: boolean;
+}
+
+class ChannelTitle extends React.Component<ChannelTitleProps, ChannelTitleState> {
+  readonly state: ChannelTitleState = { expanded: false };
+
+  render() {
+    const { expanded } = this.state;
+    const { channel: { title, members } } = this.props;
+    const memberNames = expanded && members.map(m => m.name).join(", ");
+
+    return (
+      <Row className={styles.Title}>
+        <Col>
+          <h1>{title}</h1>
+        </Col>
+        <Col xs="auto">
+          <ArrowButton direction={expanded ? "up" : "down"} onClick={() => this.setState({ expanded: !expanded })} />
+        </Col>
+        {expanded && (
+          <Col xs={12}>
+            {members.length} Members: {memberNames}
+          </Col>
+        )}
+      </Row>
+    );
+  }
+}
 
 interface ChannelProps extends RouteComponentProps<{ currentChannelId: string }> {}
 
@@ -105,16 +144,14 @@ export default function Channel({ match: { params: { currentChannelId } } }: Cha
             );
           }
 
-          const { channel: { title, messages } } = data;
+          const { channel } = data;
+          const { messages } = channel;
           console.log("DATA...", data);
 
           return (
             <React.Fragment>
-              <Row className={styles.Title}>
-                <Col>
-                  <h1>{title}</h1>
-                </Col>
-              </Row>
+              <ChannelTitle channel={channel} />
+
               {messages.map(message => (
                 <Row key={message.id} className={styles.Message}>
                   <Col xs={2}>

@@ -36,11 +36,18 @@ module.exports = {
         })
       },
       {
+        test: /\.svg/,
+        loader: "file-loader",
+        query: {
+          name: "assets/[name].[hash:8].[ext]"
+        }
+      },
+      {
         test: /\.(t|j)sx?$/,
         use: "awesome-typescript-loader",
         exclude: /node_modules/
       },
-      { enforce: "pre", test: /\.js$/, loader: "source-map-loader" }
+      { enforce: "pre", test: /\.js$/, loader: "source-map-loader", exclude: [/node_modules/, /build/, /__test__/] }
     ]
   },
   plugins: [new ExtractTextPlugin("styles-chat-app.css")],

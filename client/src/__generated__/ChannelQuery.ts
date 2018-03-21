@@ -7,6 +7,11 @@
 // GraphQL query operation: ChannelQuery
 // ====================================================
 
+export interface ChannelQuery_channel_members {
+  id: string;
+  name: string;  // The readable name
+}
+
 export interface ChannelQuery_channel_messages_author {
   id: string;
   name: string;  // The readable name
@@ -22,6 +27,7 @@ export interface ChannelQuery_channel_messages {
 export interface ChannelQuery_channel {
   id: string;
   title: string;
+  members: ChannelQuery_channel_members[];
   messages: ChannelQuery_channel_messages[];
 }
 

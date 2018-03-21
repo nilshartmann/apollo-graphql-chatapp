@@ -1,9 +1,14 @@
 import * as React from "react";
 
-import { gql } from "apollo-boost";
+import { gql as clientGql } from "apollo-boost";
 import { Query } from "react-apollo";
 
-const CURRENT_USER_CLIENT_QUERY = gql`
+// use "clientGql" here as apollo codegen does not work
+// with @client directive currently
+// (https://github.com/apollographql/apollo-codegen/issues/366)
+// as apollo codegen only looks for 'gql' tag,
+// it ignores this query
+const CURRENT_USER_CLIENT_QUERY = clientGql`
   query {
     currentUser @client {
       id
