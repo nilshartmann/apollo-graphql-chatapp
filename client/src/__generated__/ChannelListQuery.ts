@@ -29,6 +29,10 @@ export interface ChannelListQuery {
   channels: ChannelListQuery_channels[];
 }
 
+export interface ChannelListQueryVariables {
+  memberId?: string | null;
+}
+
 //==============================================================
 // START Enums and Input Objects
 // All enums and input objects are included in every output file

@@ -43,6 +43,22 @@ const channels = [
       { id: "m35", author: users[7], date: "2018-02-04T11:15:19+01:00", text: lorems.coffee[4] },
       { id: "m36", author: users[7], date: "2018-02-06T11:16:08+01:00", text: lorems.coffee[5] }
     ]
+  },
+  {
+    id: "c4",
+    title: "Office Talks",
+    members: [users[7], users[6], users[3]],
+    messages: [
+      { id: "m41", author: users[7], date: "2018-03-05T10:19:31+01:00", text: lorems.office[0] },
+      { id: "m42", author: users[7], date: "2018-03-05T10:20:47+01:00", text: lorems.office[1] },
+      { id: "m43", author: users[6], date: "2018-03-05T10:22:58+01:00", text: lorems.office[2] },
+      { id: "m44", author: users[7], date: "2018-03-05T10:45:13+01:00", text: lorems.office[3] },
+      { id: "m45", author: users[6], date: "2018-03-06T17:41:27+01:00", text: lorems.office[4] },
+      { id: "m46", author: users[5], date: "2018-03-06T17:51:19+01:00", text: lorems.office[5] },
+      { id: "m47", author: users[7], date: "2018-03-07T08:39:43+01:00", text: lorems.office[6] },
+      { id: "m48", author: users[6], date: "2018-03-07T08:42:32+01:00", text: lorems.office[7] },
+      { id: "m49", author: users[3], date: "2018-03-09T22:17:12+01:00", text: lorems.office[8] }
+    ]
   }
 ];
 

@@ -8,12 +8,12 @@ import { Row, Col } from "./layout";
 import { gql } from "apollo-boost";
 import { Query } from "react-apollo";
 import { timeOnly } from "./utils";
-import { ChannelListQuery } from "./__generated__/ChannelListQuery";
+import { ChannelListQuery, ChannelListQueryVariables } from "./__generated__/ChannelListQuery";
 import { RouteComponentProps, Link } from "react-router-dom";
 
 const QUERY = gql`
-  query ChannelListQuery {
-    channels {
+  query ChannelListQuery($memberId: String) {
+    channels(memberId: $memberId) {
       id
       title
       latestMessage {
@@ -29,11 +29,16 @@ const QUERY = gql`
   }
 `;
 
-class ChannelListQueryComponent extends Query<ChannelListQuery> {}
+class ChannelListQueryComponent extends Query<ChannelListQuery, ChannelListQueryVariables> {}
 interface ChannelListProps extends RouteComponentProps<{ currentChannelId: string }> {}
 export default function ChannelList({ match }: ChannelListProps) {
   return (
-    <ChannelListQueryComponent query={QUERY}>
+    <ChannelListQueryComponent
+      query={QUERY}
+      variables={{
+        memberId: "u7"
+      }}
+    >
       {function({ loading, error, data = { channels: [] } }) {
         if (error) {
           return (

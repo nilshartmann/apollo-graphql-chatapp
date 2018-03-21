@@ -33,12 +33,15 @@
     "typescript": "^2.7.2"
   },
   "dependencies": {
+    "@types/graphql": "^0.12.5",
     "apollo-server-express": "^1.3.2",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "express": "^4.16.3",
     "graphql": "^0.13.2",
+    "graphql-subscriptions": "^0.5.8",
     "graphql-tools": "^2.23.1",
+    "subscriptions-transport-ws": "^0.9.6",
     "tslint": "^5.7.0"
   }
 }
