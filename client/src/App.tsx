@@ -17,14 +17,6 @@ import channels from "../../server/src/mocks/channels";
 import { Switch, Route, Redirect } from "react-router-dom";
 const HOME = "https://github.com/nilshartmann/apollo-graphql-chatapp";
 
-const CURRENT_USER_CLIENT_QUERY = gql`
-  query {
-    currentUser @client {
-      name
-    }
-  }
-`;
-
 export default function App() {
   return (
     <Grid className={styles.AppFrame} style={{}}>
