@@ -12,11 +12,11 @@ import { Grid, Row, Col } from "./layout";
 import CurrentUser from "./CurrentUser";
 import ChannelList from "./ChannelList";
 import Channel from "./Channel";
+import Avatar from "./Avatar";
 
 import channels from "../../server/src/mocks/channels";
 import { Switch, Route, Redirect } from "react-router-dom";
 const HOME = "https://github.com/nilshartmann/apollo-graphql-chatapp";
-
 export default function App() {
   return (
     <Grid className={styles.AppFrame} style={{}}>
@@ -25,7 +25,14 @@ export default function App() {
           <h1>GraphQL Chat App</h1>
         </Col>
         <Col xs="auto">
-          <CurrentUser>{({ name }) => <h3>{name}</h3>}</CurrentUser>
+          <CurrentUser>
+            {({ id, name }) => (
+              <div className={styles.UserDisplay}>
+                <Avatar userId={id} />
+                <h3>{name}</h3>
+              </div>
+            )}
+          </CurrentUser>
         </Col>
       </Row>
 

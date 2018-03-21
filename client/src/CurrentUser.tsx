@@ -6,6 +6,7 @@ import { Query } from "react-apollo";
 const CURRENT_USER_CLIENT_QUERY = gql`
   query {
     currentUser @client {
+      id
       name
     }
   }

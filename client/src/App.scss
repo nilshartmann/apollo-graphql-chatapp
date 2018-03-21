@@ -61,11 +61,22 @@
     margin-bottom: 0;
   }
 
-  h3 {
-    font-size: 2rem;
-    font-weight: normal;
-    margin-bottom: 0;
-    color: $color-one;
+  .UserDisplay {
+    display: flex;
+    align-items: center;
+
+    img {
+      max-height: 2rem;
+      width: 2rem;
+      margin-right: 0.5rem;
+    }
+
+    h3 {
+      font-size: 2rem;
+      font-weight: normal;
+      margin-bottom: 0;
+      color: $color-one;
+    }
   }
 }
 

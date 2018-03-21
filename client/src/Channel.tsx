@@ -20,6 +20,8 @@ import {
   PostNewMessageMutation_postMessage
 } from "./__generated__/PostNewMessageMutation";
 
+import Avatar from "./Avatar";
+
 const CHANNEL_QUERY = gql`
   query ChannelQuery($channelId: String!) {
     #draftMessage @client {
@@ -116,7 +118,7 @@ export default function Channel({ match: { params: { currentChannelId } } }: Cha
               {messages.map(message => (
                 <Row key={message.id} className={styles.Message}>
                   <Col xs={2}>
-                    <img src={`/avatars/${message.author.id}.svg`} />
+                    <Avatar userId={message.author.id} />
                   </Col>
                   <Col>
                     <h1>{message.author.name}</h1>
