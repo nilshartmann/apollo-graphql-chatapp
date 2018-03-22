@@ -82,20 +82,37 @@ interface MessagesListProps {
 }
 class MessagesList extends React.Component<MessagesListProps> {
   messageListRef: HTMLDivElement | null = null;
+  scrollAtBottom: boolean = true;
 
   scrollToBottom = () => {
-    // if (!this.messageListRef) {
-    //   return;
-    // }
-    // const scrollHeight = this.messageListRef.scrollHeight;
-    // const height = this.messageListRef.clientHeight;
-    // const maxScrollTop = scrollHeight - height;
-    // console.log("ScrollToBottom ", scrollHeight, height, maxScrollTop);
-    // this.messageListRef.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
+    if (!this.messageListRef) {
+      return;
+    }
+    const scrollHeight = this.messageListRef.scrollHeight;
+    const height = this.messageListRef.clientHeight;
+    const maxScrollTop = scrollHeight - height;
+    console.log("ScrollToBottom ", scrollHeight, height, maxScrollTop);
+    this.messageListRef.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
   };
 
-  componentDidUpdate() {
+  componentWillUpdate(nextProps: MessagesListProps) {
+    const newMessageArrived = nextProps.channel.messages.length !== this.props.channel.messages.length;
+    if (!newMessageArrived || !this.messageListRef) {
+      return;
+    }
+    const scrollPos = this.messageListRef.scrollTop;
+    const scrollBottom = this.messageListRef.scrollHeight - this.messageListRef.clientHeight;
+    this.scrollAtBottom = scrollBottom <= 0 || scrollPos === scrollBottom;
+  }
+
+  componentDidMount() {
     this.scrollToBottom();
+  }
+
+  componentDidUpdate() {
+    if (this.scrollAtBottom) {
+      this.scrollToBottom();
+    }
   }
   render() {
     const { channel } = this.props;
