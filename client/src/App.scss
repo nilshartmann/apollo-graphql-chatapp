@@ -9,11 +9,15 @@
   @import "./layout/bootstrap/scss/bootstrap-grid";
   @import "./layout/bootstrap/scss/utilities";
 
+  html,
+  body {
+    height: 100%;
+  }
+
   body {
     color: $color-text;
     font-family: "Source Sans Pro", sans-serif;
     background-color: #f2f2f2;
-    height: 100%;
   }
 
   a {
@@ -69,6 +73,10 @@
   ::-webkit-scrollbar-thumb {
     background-color: $color-one;
   }
+
+  #chat-app {
+    height: 100%;
+  }
 }
 
 .AppFrame {
@@ -81,11 +89,10 @@
 
 .Header {
   background-color: $color-one;
+  height: 4rem;
   margin-bottom: 2rem;
-  padding-top: 0.7rem;
-  padding-bottom: 0.7rem;
-  padding-left: 0;
-  padding-right: 0;
+  padding: 0.7rem 0;
+
   margin-right: -32px;
   margin-left: -32px;
 
@@ -114,16 +121,21 @@
     }
   }
 }
+.ChannelListRow {
+  // Header.height minus Header.margin-Bottom  minus Footer.height
+  height: calc(100% - 4rem - 2rem - 1.5rem);
+}
 
 .Main {
-  height: calc(100% - 8.2rem);
+  overflow-y: auto;
+  // height: 100%;
 }
 
 .Footer {
+  height: 1.5rem;
   border-top: 4px solid $color-one;
   // background-color: $color-one;
-  margin-top: 1rem;
-  padding-top: 0.5rem;
+  padding-top: 0.6rem;
   text-align: center;
   h3 {
     font-family: "Source Sans Pro", sans-serif;

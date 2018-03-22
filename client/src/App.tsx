@@ -20,56 +20,55 @@ const HOME = "https://github.com/nilshartmann/apollo-graphql-chatapp";
 export default function App() {
   return (
     <React.Fragment>
-      <div className={styles.App}>
-        <Grid className={styles.AppFrame}>
-          <Row className={styles.Header} align="center">
-            <Col>
-              <h1>GraphQL Chat App</h1>
-            </Col>
-            <Col xs="auto">
-              <CurrentUser>
-                {({ id, name }) => (
-                  <div className={styles.UserDisplay}>
-                    <Avatar userId={id} />
-                    <h3>{name}</h3>
-                  </div>
-                )}
-              </CurrentUser>
-            </Col>
-          </Row>
-          <Row className={styles.Main}>
-            <Route
-              exact
-              path="/channel/:currentChannelId?"
-              render={routerProps => (
-                <Col xs={4} style={{ overflowY: "auto", height: "100%" }}>
-                  <ChannelList {...routerProps} />
-                </Col>
+      <Grid className={styles.AppFrame}>
+        <Row className={styles.Header} align="center">
+          <Col>
+            <h1>GraphQL Chat App</h1>
+          </Col>
+          <Col xs="auto">
+            <CurrentUser>
+              {({ id, name }) => (
+                <div className={styles.UserDisplay}>
+                  <Avatar userId={id} />
+                  <h3>{name}</h3>
+                </div>
               )}
-            />
-            <Route
-              exact
-              path="/channel/:currentChannelId"
-              render={routerProps => (
-                <Col style={{ overflowY: "auto", height: "100%" }}>
-                  <Channel {...routerProps} />
-                </Col>
-              )}
-            />
-            <Route exact path="/" render={() => <Redirect to="/channel" />} />
-          </Row>
+            </CurrentUser>
+          </Col>
+        </Row>
+        <Row className={styles.ChannelListRow}>
+          <Route
+            exact
+            path="/channel/:currentChannelId?"
+            render={routerProps => (
+              <Col xs={4} className={styles.Main}>
+                <ChannelList {...routerProps} />
+              </Col>
+            )}
+          />
 
-          <Row className={styles.Footer} align="center">
-            <Col>
-              <h3>
-                <a href={HOME} target="_blank">
-                  GraphQL Sample Application - {HOME}
-                </a>
-              </h3>
-            </Col>
-          </Row>
-        </Grid>
-      </div>
+          <Route
+            exact
+            path="/channel/:currentChannelId"
+            render={routerProps => (
+              <Col>
+                <Channel {...routerProps} />
+              </Col>
+            )}
+          />
+          <Route exact path="/" render={() => <Redirect to="/channel" />} />
+        </Row>
+
+        <Row className={styles.Footer} align="center">
+          <Col>
+            <h3>
+              <a href={HOME} target="_blank">
+                GraphQL Sample Application - {HOME}
+              </a>
+            </h3>
+          </Col>
+        </Row>
+      </Grid>
     </React.Fragment>
   );
 }

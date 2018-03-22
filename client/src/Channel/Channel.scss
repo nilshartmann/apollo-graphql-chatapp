@@ -1,6 +1,13 @@
-@import "./vars";
+@import "../vars";
 
 .Channel {
+  .MessagesList {
+    overflow-y: auto;
+    height: calc(100vh - 15rem);
+    margin-bottom: 1rem;
+    padding-right: 1rem;
+  }
+
   .Title {
     @include card();
     margin-left: 0.5rem;
