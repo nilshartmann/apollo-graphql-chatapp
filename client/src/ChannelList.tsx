@@ -77,14 +77,14 @@ export default function ChannelList({ match }: ChannelListProps) {
 
             return (
               <React.Fragment>
-                <NewMessageSubscriptionComponent query={NEW_MESSAGE_SUBSCRIPTION}>
+                {/* <NewMessageSubscriptionComponent query={NEW_MESSAGE_SUBSCRIPTION}>
                   {function({ data, loading, error }) {
                     console.log("SUBSCRIPTION loading: " + loading + " error: " + error);
                     console.log("             data");
                     console.log("NEW MESSAGE", data && data.messageAdded);
                     return <h1>subscri</h1>;
                   }}
-                </NewMessageSubscriptionComponent>;
+                </NewMessageSubscriptionComponent> */}
                 {data.channels.map(channel => (
                   <ChannelCard
                     key={channel.id}
@@ -143,11 +143,11 @@ function ChannelCard({
               )}
             </Row>
 
-            <div className={styles.lastMessageAbstract}>
-              <div className={styles.lastMessageAbstractMessage}>
+            <div className={styles.latestMessageAbstract}>
+              <div className={styles.latestMessageAbstractMessage}>
                 {author}: {lastMessage}
               </div>
-              <div className={styles.lastMessageAbstractDate}>{draft ? <span>(Draft)</span> : timeOnly(date)}</div>
+              <div className={styles.latestMessageAbstractDate}>{draft ? <span>(Draft)</span> : timeOnly(date)}</div>
             </div>
           </div>
         </Col>

@@ -41,7 +41,7 @@ export default function App() {
           exact
           path="/channel/:currentChannelId?"
           render={routerProps => (
-            <Col xs={3} style={{ overflowY: "auto", height: "100%" }}>
+            <Col xs={4} style={{ overflowY: "auto", height: "100%" }}>
               <ChannelList {...routerProps} />
             </Col>
           )}
@@ -62,7 +62,7 @@ export default function App() {
         <Col>
           <h3>
             <a href={HOME} target="_blank">
-              {HOME}
+              GraphQL Sample Application - {HOME}
             </a>
           </h3>
         </Col>

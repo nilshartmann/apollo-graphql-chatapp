@@ -159,7 +159,7 @@ export default function Channel({ match: { params: { currentChannelId } } }: Cha
                   </Col>
                   <Col>
                     <h1>{message.author.name}</h1>
-                    {message.text}
+                    <div className={styles.Text}>{message.text}</div>
                     <div className={styles.Date}>{longDate(message.date)}</div>
                   </Col>
                 </Row>
@@ -236,6 +236,7 @@ class MessageEditor extends React.Component<MessageEditorProps, MessageEditorSta
         <textarea
           placeholder="Enter your message"
           value={newMessage}
+          rows={1}
           onChange={e => this.setState({ newMessage: e.currentTarget.value })}
         />
         <button disabled={newMessage.trim().length === 0} onClick={this.onSendClick}>

@@ -1,15 +1,16 @@
-$color-one: #fcf8df;
-$color-two: #b0dfb3;
-$color-three: #f7a036;
-$color-four: #a07aac;
-$color-five: #efecc9;
-$color-six: #7e6f83;
-$color-seven: #e15601;
+$color-one: #fb49a6;
+$color-light: #ffffff;
+
+$color-text: #7e6f83;
+$color-background: #ffdba7;
 
 @mixin card() {
-  margin-bottom: 1rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+  margin-bottom: 2rem;
+  padding: 0.5rem 0.7rem;
+  // padding-bottom: 0.5rem;
+
+  background-color: $color-light;
+  border: 4px solid $color-one;
+  // border-top: 1px solid rgba(0, 0, 0, 0.1);
+  // box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
 }

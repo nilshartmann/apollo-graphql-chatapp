@@ -10,11 +10,12 @@
     margin-left: 0.5rem;
     margin-right: -0px;
 
-    background-color: $color-six;
-    color: $color-one;
+    color: $color-light;
+    background-color: $color-one;
 
     h1 {
       margin-bottom: 0;
+      color: $color-light;
     }
   }
 
@@ -23,8 +24,9 @@
     margin-left: 0.5rem;
     margin-right: 0px;
 
-    background-color: $color-five;
-    color: $color-six;
+    .Text {
+      font-size: 1.25rem;
+    }
 
     .Date {
       margin-top: 0.5rem;
@@ -37,16 +39,12 @@
     margin-left: 0.5rem;
     margin-right: 0px;
 
-    background-color: $color-five;
-    color: $color-six;
-
     .Form {
       display: flex;
     }
     textarea {
-      background-color: $color-one;
-      color: $color-six;
       border: 0;
+      border-bottom: 1px solid $color-one;
 
       flex-basis: 0;
       flex-grow: 1;
@@ -55,8 +53,6 @@
 
     button {
       border: 0;
-      background-color: $color-six;
-      color: $color-one;
       cursor: pointer;
 
       width: auto;
@@ -69,15 +65,15 @@
         outline: none;
       }
 
-      &:hover {
-        background-color: lighten($color-six, 10%);
-      }
+      // &:hover {
+      //   background-color: lighten($color-six, 10%);
+      // }
 
-      &:disabled {
-        cursor: default;
-        color: lighten($color-one, 10%);
-        background-color: lighten($color-six, 10%);
-      }
+      // &:disabled {
+      //   cursor: default;
+      //   color: lighten($color-one, 10%);
+      //   background-color: lighten($color-six, 10%);
+      // }
     }
   }
 }

@@ -179,19 +179,22 @@ const ws = createServer(app).listen(3000, () => {
   console.log(`GraphQL Server is now running on http://localhost:3000`);
 });
 
-setInterval(() => {
-  const newMessageId = messageIdCounter++;
-  const channel = newMessageId % 2 ? channels[0] : channels[1];
-  console.log(`PUBLISH NEW MESSAGE ${newMessageId} to channel ${channel.id} (${channel.title})`);
-  const newMessage: Message = {
-    id: `am-${newMessageId}`,
-    text: `Auto Message ${newMessageId} in ${channel.title}`,
-    date: new Date().toISOString(),
-    author: users[Math.floor(Math.random() * users.length)]
-  };
-  channel.messages = channel.messages.concat(newMessage);
-  pubsub.publish("messageAdded", {
-    messageAdded: newMessage,
-    channel: channel
-  });
-}, 2000);
+const GENERATE_DUMMY_MESSAGES = false;
+
+GENERATE_DUMMY_MESSAGES &&
+  setInterval(() => {
+    const newMessageId = messageIdCounter++;
+    const channel = newMessageId % 2 ? channels[0] : channels[1];
+    console.log(`PUBLISH NEW MESSAGE ${newMessageId} to channel ${channel.id} (${channel.title})`);
+    const newMessage: Message = {
+      id: `am-${newMessageId}`,
+      text: `Auto Message ${newMessageId} in ${channel.title}`,
+      date: new Date().toISOString(),
+      author: users[Math.floor(Math.random() * users.length)]
+    };
+    channel.messages = channel.messages.concat(newMessage);
+    pubsub.publish("messageAdded", {
+      messageAdded: newMessage,
+      channel: channel
+    });
+  }, 2000);

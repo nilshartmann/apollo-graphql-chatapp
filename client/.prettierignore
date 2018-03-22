@@ -4,3 +4,5 @@ lib/
 *.min.js
 .vscode/
 package.json
+
+.fonts/fonts.css

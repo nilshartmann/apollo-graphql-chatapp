@@ -10,27 +10,37 @@
   @import "./layout/bootstrap/scss/utilities";
 
   body {
-    color: $color-four;
-    font-family: Helvetica, Arial, sans-serif;
-    background-color: #f2f2f2;
+    color: $color-text;
+    font-family: "Source Sans Pro", sans-serif;
+    background-color: $color-background;
 
     height: 100%;
   }
 
   a {
-    color: $color-four;
+    color: $color-text;
     text-decoration: none;
 
     &:hover,
     &:active,
     &:focus {
       cursor: pointer;
-      color: $color-four;
+      color: $color-text;
       text-decoration: none;
     }
   }
 
-  input,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+    font-family: "Montserrat", sans-serif;
+  }
+
+  *,
   input:active,
   input:focus,
   textarea,
@@ -38,26 +48,39 @@
   textarea:focus {
     outline: none;
   }
+
+  ::-webkit-scrollbar-track {
+    background-color: $color-light;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    background-color: $color-light;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: $color-one;
+  }
 }
 
 //
 .AppFrame {
   height: 100vh;
   overflow: hidden;
-  background-color: $color-one;
+  // background-color: $color-one;
   padding: 1rem 2rem;
 }
 
 .Header {
-  background-color: $color-three;
-  margin-bottom: 1rem;
+  background-color: $color-one;
+  margin-bottom: 2rem;
   padding-top: 0.7rem;
   padding-bottom: 0.7rem;
 
   h1 {
-    font-size: 2.25rem;
-    font-weight: normal;
-    color: $color-one;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: $color-light;
     margin-bottom: 0;
   }
 
@@ -66,8 +89,8 @@
     align-items: center;
 
     img {
-      max-height: 2rem;
-      width: 2rem;
+      max-height: 2.5rem;
+      width: 2.5rem;
       margin-right: 0.5rem;
     }
 
@@ -75,22 +98,25 @@
       font-size: 2rem;
       font-weight: normal;
       margin-bottom: 0;
-      color: $color-one;
+      color: $color-light;
     }
   }
 }
 
 .Main {
-  height: calc(100% - 8.5rem);
+  height: calc(100% - 10rem);
 }
 
 .Footer {
-  background-color: $color-six;
+  border-top: 4px solid $color-one;
+  // background-color: $color-one;
   margin-top: 1rem;
+  padding-top: 0.5rem;
   text-align: center;
   h3 {
+    font-family: "Source Sans Pro", sans-serif;
     font-size: 1rem;
-    font-weight: normal;
+    font-weight: 100;
     margin-bottom: 0;
     color: $color-one;
     letter-spacing: 0.5px;
