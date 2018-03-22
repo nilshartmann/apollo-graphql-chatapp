@@ -1,0 +1,15 @@
+@import "../_vars";
+.Button {
+  background-color: $color-light;
+  border: 1px solid $color-one;
+
+  padding: 0 0.5rem;
+  margin-bottom: 0;
+
+  @include clickable();
+
+  &:focus,
+  &:active {
+    color: $color-light;
+  }
+}

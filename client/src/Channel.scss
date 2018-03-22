@@ -1,10 +1,6 @@
 @import "./vars";
 
 .Channel {
-  h1 {
-    font-size: 1.5rem;
-    letter-spacing: 0.5px;
-  }
   .Title {
     @include card();
     margin-left: 0.5rem;
@@ -45,35 +41,19 @@
     textarea {
       border: 0;
       border-bottom: 1px solid $color-one;
+      background-color: $color-light;
 
+      font-size: 1.25rem;
       flex-basis: 0;
       flex-grow: 1;
       max-width: 100%;
-    }
 
-    button {
-      border: 0;
-      cursor: pointer;
+      margin-right: 1rem;
 
-      width: auto;
-      max-width: none;
-      flex: 0 0 auto;
-      outline: none;
-
-      &:hover,
-      &:active &:focus {
-        outline: none;
+      &:focus,
+      &:active {
+        color: $color-text;
       }
-
-      // &:hover {
-      //   background-color: lighten($color-six, 10%);
-      // }
-
-      // &:disabled {
-      //   cursor: default;
-      //   color: lighten($color-one, 10%);
-      //   background-color: lighten($color-six, 10%);
-      // }
     }
   }
 }

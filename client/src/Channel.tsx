@@ -20,8 +20,9 @@ import {
   PostNewMessageMutation_postMessage
 } from "./__generated__/PostNewMessageMutation";
 
-import Avatar from "./Avatar";
-import ArrowButton from "./ArrowButton";
+import Avatar from "./components/Avatar";
+import ArrowButton from "./components/ArrowButton";
+import Button from "./components/Button";
 
 const CHANNEL_QUERY = gql`
   query ChannelQuery($channelId: String!) {
@@ -231,17 +232,20 @@ class MessageEditor extends React.Component<MessageEditorProps, MessageEditorSta
 
   render() {
     const { newMessage } = this.state;
+
+    const lines = (newMessage.match(/\n/g) || []).length + 1;
+
     return (
       <React.Fragment>
         <textarea
           placeholder="Enter your message"
           value={newMessage}
-          rows={1}
+          rows={lines}
           onChange={e => this.setState({ newMessage: e.currentTarget.value })}
         />
-        <button disabled={newMessage.trim().length === 0} onClick={this.onSendClick}>
+        <Button disabled={newMessage.trim().length === 0} onClick={this.onSendClick}>
           Send
-        </button>
+        </Button>
       </React.Fragment>
     );
   }

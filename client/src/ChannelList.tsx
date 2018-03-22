@@ -125,12 +125,12 @@ function ChannelCard({
   unreadMessageCount,
   draft
 }: ChannelCardProps) {
-  const classnames = classNames(styles.ChannelCard, { [styles.active]: active });
+  const classnames = classNames(styles.ChannelCardContent, { [styles.active]: active });
 
   return (
     <Link to={`/channel/${channelId}`}>
-      <Row className={classnames}>
-        <Col className={styles.Bla}>
+      <Row className={styles.ChannelCard}>
+        <Col className={classnames}>
           <div style={{ display: "flex", flexDirection: "column" }}>
             <Row>
               <Col>
