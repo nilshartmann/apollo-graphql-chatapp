@@ -7,7 +7,7 @@ const { graphqlExpress, graphiqlExpress } = require("apollo-server-express");
 const { makeExecutableSchema } = require("graphql-tools");
 import { SubscriptionServer } from "subscriptions-transport-ws";
 
-import { PubSub } from "graphql-subscriptions";
+import { PubSub, withFilter } from "graphql-subscriptions";
 import users from "./mocks/users";
 import channels from "./mocks/channels";
 
@@ -35,7 +35,9 @@ const typeDefs = `
     author: User!
     date: String!
     text: String!
+    channel: Channel!
   }
+
 
   type Query { 
     channels(memberId: String): [Channel!]! 
@@ -48,7 +50,7 @@ const typeDefs = `
   }
 
   type Subscription {
-    messageAdded: Message!
+    messageAdded(channelIds: [String!]!): Message!
   }
 `;
 
@@ -69,6 +71,7 @@ interface Message {
   date: string;
   author: User;
 }
+
 let messageIdCounter = 10000;
 const pubsub = new PubSub();
 // The resolvers
@@ -105,7 +108,18 @@ const resolvers = {
   },
   Subscription: {
     messageAdded: {
-      subscribe: () => pubsub.asyncIterator("messageAdded")
+      resolve: (payload: any) => {
+        const value = payload.messageAdded;
+        console.log("PAYLOAD", payload);
+        console.log("VALUE", value);
+        return value;
+      },
+      subscribe: withFilter(
+        () => pubsub.asyncIterator("messageAdded"),
+        ({ channel }: { channel: any }, { channelIds }: { channelIds: string[] }) => {
+          return channelIds.includes(channel.id);
+        }
+      )
     }
   },
   Channel: {
@@ -118,6 +132,9 @@ const resolvers = {
         }
         return prev;
       })
+  },
+  Message: {
+    channel: (obj: Message) => channels.find(c => c.messages.find(m => m.id === obj.id) !== undefined)
   }
 };
 
@@ -162,16 +179,19 @@ const ws = createServer(app).listen(3000, () => {
   console.log(`GraphQL Server is now running on http://localhost:3000`);
 });
 
-// setInterval(() => {
-//   const newMessageId = `automessage-${messageIdCounter++}`;
-//   console.log("PUBLISH NEW MESSAGE..." + newMessageId);
-//   const newMessage: Message = {
-//     id: newMessageId,
-//     text: `Auto Message ${newMessageId}`,
-//     date: new Date().toISOString(),
-//     author: users[Math.floor(Math.random() * users.length)]
-//   };
-//   pubsub.publish("messageAdded", {
-//     messageAdded: newMessage
-//   });
-// }, 2000);
+setInterval(() => {
+  const newMessageId = messageIdCounter++;
+  const channel = newMessageId % 2 ? channels[0] : channels[1];
+  console.log(`PUBLISH NEW MESSAGE ${newMessageId} to channel ${channel.id} (${channel.title})`);
+  const newMessage: Message = {
+    id: `am-${newMessageId}`,
+    text: `Auto Message ${newMessageId} in ${channel.title}`,
+    date: new Date().toISOString(),
+    author: users[Math.floor(Math.random() * users.length)]
+  };
+  channel.messages = channel.messages.concat(newMessage);
+  pubsub.publish("messageAdded", {
+    messageAdded: newMessage,
+    channel: channel
+  });
+}, 2000);

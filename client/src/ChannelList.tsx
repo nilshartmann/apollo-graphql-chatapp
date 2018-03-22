@@ -6,12 +6,27 @@ import * as classNames from "classnames";
 import { Row, Col } from "./layout";
 
 import { gql } from "apollo-boost";
-import { Query } from "react-apollo";
+import { Query, Subscription } from "react-apollo";
 import { timeOnly } from "./utils";
 import { ChannelListQuery, ChannelListQueryVariables } from "./__generated__/ChannelListQuery";
 import { RouteComponentProps, Link } from "react-router-dom";
 
 import CurrentUser from "./CurrentUser";
+import { NewMessageSubscription } from "./__generated__/NewMessageSubscription";
+
+const NEW_MESSAGE_SUBSCRIPTION = gql`
+  subscription NewMessageSubscription {
+    messageAdded {
+      id
+      date
+      author {
+        id
+        name
+      }
+      text
+    }
+  }
+`;
 
 const CHANNEL_LIST_QUERY = gql`
   query ChannelListQuery($memberId: String) {
@@ -32,6 +47,7 @@ const CHANNEL_LIST_QUERY = gql`
 `;
 
 class ChannelListQueryComponent extends Query<ChannelListQuery, ChannelListQueryVariables> {}
+class NewMessageSubscriptionComponent extends Subscription<NewMessageSubscription> {}
 interface ChannelListProps extends RouteComponentProps<{ currentChannelId: string }> {}
 export default function ChannelList({ match }: ChannelListProps) {
   console.log("MATCH", match);
@@ -45,7 +61,7 @@ export default function ChannelList({ match }: ChannelListProps) {
             memberId: currentUserId
           }}
         >
-          {function({ loading, error, data = { channels: [] } }) {
+          {function({ loading, error, subscribeToMore, data = { channels: [] } }) {
             if (error) {
               return (
                 <div>
@@ -61,6 +77,14 @@ export default function ChannelList({ match }: ChannelListProps) {
 
             return (
               <React.Fragment>
+                <NewMessageSubscriptionComponent query={NEW_MESSAGE_SUBSCRIPTION}>
+                  {function({ data, loading, error }) {
+                    console.log("SUBSCRIPTION loading: " + loading + " error: " + error);
+                    console.log("             data");
+                    console.log("NEW MESSAGE", data && data.messageAdded);
+                    return <h1>subscri</h1>;
+                  }}
+                </NewMessageSubscriptionComponent>;
                 {data.channels.map(channel => (
                   <ChannelCard
                     key={channel.id}

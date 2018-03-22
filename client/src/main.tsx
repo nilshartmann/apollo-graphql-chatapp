@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 
-import ApolloClient from "apollo-boost";
+import ApolloClient from "./boost_patch/ApolloClientWithWebsockets";
 import { ApolloProvider } from "react-apollo";
 import App from "./app";
 import { ApolloCache } from "apollo-cache";
