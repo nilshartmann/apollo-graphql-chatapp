@@ -140,6 +140,27 @@ class MessagesList extends React.Component<MessagesListProps> {
 interface ChannelProps extends RouteComponentProps<{ currentChannelId: string }> {}
 
 export default class Channel extends React.Component<ChannelProps> {
+  publishDraftMessage = (client: ApolloClient<any>, currentChannelId: string, newValue: string) => {
+    client.mutate({
+      mutation: gql`
+        mutation updateDraftMutation($channelId: string!, $text: string!) {
+          setDraftMessageForChannel(channelId: $channelId, text: $text) @client {
+            id
+            text
+          }
+        }
+      `,
+      variables: {
+        channelId: currentChannelId,
+        authorId: "u5",
+        text: newValue
+      },
+      update: (proxy, { data }) => {
+        console.log("AFTER POST DRAFT", data);
+      }
+    });
+  };
+
   postNewMessage = (client: ApolloClient<any>, currentChannelId: string, newValue: string) => {
     client.mutate<PostNewMessageMutation>({
       mutation: POST_NEW_MESSAGE,
@@ -216,7 +237,10 @@ export default class Channel extends React.Component<ChannelProps> {
                 <MessagesList channel={channel} />
                 <Row className={styles.Editor}>
                   <Col className={styles.Form}>
-                    <MessageEditor onNewMessage={newValue => this.postNewMessage(client, currentChannelId, newValue)} />
+                    <MessageEditor
+                      onMessageChange={currentValue => this.publishDraftMessage(client, currentChannelId, currentValue)}
+                      onNewMessage={newValue => this.postNewMessage(client, currentChannelId, newValue)}
+                    />
                   </Col>
                 </Row>
               </div>

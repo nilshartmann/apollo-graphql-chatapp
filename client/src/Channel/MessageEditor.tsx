@@ -3,6 +3,7 @@ import * as React from "react";
 import Button from "../components/Button";
 
 interface MessageEditorProps {
+  onMessageChange(currentMessage: string): void;
   onNewMessage(newMessage: string): void;
 }
 
@@ -13,6 +14,13 @@ interface MessageEditorState {
 export default class MessageEditor extends React.Component<MessageEditorProps, MessageEditorState> {
   readonly state: MessageEditorState = {
     newMessage: ""
+  };
+
+  onMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newMessage = e.currentTarget.value;
+
+    this.setState({ newMessage });
+    this.props.onMessageChange(newMessage);
   };
 
   onSendClick = () => {
@@ -30,12 +38,7 @@ export default class MessageEditor extends React.Component<MessageEditorProps, M
 
     return (
       <React.Fragment>
-        <textarea
-          placeholder="Enter your message"
-          value={newMessage}
-          rows={lines}
-          onChange={e => this.setState({ newMessage: e.currentTarget.value })}
-        />
+        <textarea placeholder="Enter your message" value={newMessage} rows={lines} onChange={this.onMessageChange} />
 
         <Button disabled={newMessage.trim().length === 0} onClick={this.onSendClick}>
           Send

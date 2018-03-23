@@ -5,7 +5,7 @@ import * as classNames from "classnames";
 
 import { Row, Col } from "./layout";
 
-import { gql } from "apollo-boost";
+import { gql, gql as clientGql } from "apollo-boost";
 import { Query, Subscription } from "react-apollo";
 import { timeOnly } from "./utils";
 import { ChannelListQuery, ChannelListQueryVariables } from "./__generated__/ChannelListQuery";
@@ -23,6 +23,15 @@ const NEW_MESSAGE_SUBSCRIPTION = gql`
         id
         name
       }
+      text
+    }
+  }
+`;
+
+const DRAFT_MESSAGES_QUERY = clientGql`
+  query GetDraftMessages {
+    draftMessages @client {
+      id
       text
     }
   }
@@ -50,8 +59,6 @@ class ChannelListQueryComponent extends Query<ChannelListQuery, ChannelListQuery
 class NewMessageSubscriptionComponent extends Subscription<NewMessageSubscription> {}
 interface ChannelListProps extends RouteComponentProps<{ currentChannelId: string }> {}
 export default function ChannelList({ match }: ChannelListProps) {
-  console.log("MATCH", match);
-
   return (
     <CurrentUser>
       {({ id: currentUserId }) => (
@@ -61,7 +68,7 @@ export default function ChannelList({ match }: ChannelListProps) {
             memberId: currentUserId
           }}
         >
-          {function({ loading, error, subscribeToMore, data = { channels: [] } }) {
+          {({ loading, error, subscribeToMore, data = { channels: [] } }) => {
             if (error) {
               return (
                 <div>
@@ -85,17 +92,31 @@ export default function ChannelList({ match }: ChannelListProps) {
                     return <h1>subscri</h1>;
                   }}
                 </NewMessageSubscriptionComponent> */}
-                {data.channels.map(channel => (
-                  <ChannelCard
-                    key={channel.id}
-                    channelId={channel.id}
-                    title={channel.title}
-                    author={channel.latestMessage.author.name}
-                    lastMessage={channel.latestMessage.text}
-                    date={channel.latestMessage.date}
-                    active={channel.id === match.params.currentChannelId}
-                  />
-                ))}
+                <Query query={DRAFT_MESSAGES_QUERY}>
+                  {({ data: draftMessageQueryResult }) => {
+                    const draftMessages: [{ id: string; text: string }] = draftMessageQueryResult.draftMessages;
+
+                    const getDraftMessageForChannel = (channelId: string) => {
+                      const r = draftMessages.find(dm => dm.id === channelId);
+
+                      return r ? r.text : null;
+                    };
+
+                    console.log("draftMessageQueryResult", draftMessageQueryResult.draftMessages);
+                    return data.channels.map(channel => (
+                      <ChannelCard
+                        key={channel.id}
+                        channelId={channel.id}
+                        title={channel.title}
+                        author={channel.latestMessage.author.name}
+                        lastMessage={channel.latestMessage.text}
+                        draftMessage={getDraftMessageForChannel(channel.id)}
+                        date={channel.latestMessage.date}
+                        active={channel.id === match.params.currentChannelId}
+                      />
+                    ));
+                  }}
+                </Query>
               </React.Fragment>
             );
           }}
@@ -113,7 +134,7 @@ interface ChannelCardProps {
   date: string;
   active?: boolean;
   unreadMessageCount?: number;
-  draft?: boolean;
+  draftMessage?: string | null;
 }
 function ChannelCard({
   channelId,
@@ -123,9 +144,12 @@ function ChannelCard({
   lastMessage,
   date,
   unreadMessageCount,
-  draft
+  draftMessage
 }: ChannelCardProps) {
   const classnames = classNames(styles.ChannelCardContent, { [styles.active]: active });
+
+  const text = draftMessage ? draftMessage : `${author}: ${lastMessage}`;
+  const dateOrDraft = draftMessage ? "(Draft)" : timeOnly(date);
 
   return (
     <Link to={`/channel/${channelId}`}>
@@ -144,10 +168,8 @@ function ChannelCard({
             </Row>
 
             <div className={styles.latestMessageAbstract}>
-              <div className={styles.latestMessageAbstractMessage}>
-                {author}: {lastMessage}
-              </div>
-              <div className={styles.latestMessageAbstractDate}>{draft ? <span>(Draft)</span> : timeOnly(date)}</div>
+              <div className={styles.latestMessageAbstractMessage}>{text}</div>
+              <div className={styles.latestMessageAbstractDate}>{dateOrDraft}</div>
             </div>
           </div>
         </Col>
