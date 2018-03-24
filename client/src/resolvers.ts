@@ -1,6 +1,6 @@
 import ApolloClient, { gql } from "./boost_patch/ApolloClientWithWebsockets";
 import { ApolloCache } from "apollo-cache";
-
+import { DraftMessage } from "./types";
 export const defaults = {
   currentUser: {
     __typename: "CurrentUser",
@@ -25,7 +25,7 @@ export const resolvers = {
           text
         }
       `;
-      const existingDraftMessage = cache.readFragment({ fragment, id });
+      const existingDraftMessage = cache.readFragment({ fragment, id }) as DraftMessage;
 
       if (existingDraftMessage) {
         // already available
@@ -35,7 +35,7 @@ export const resolvers = {
       }
 
       const currentDraftMessages: {
-        draftMessages: [{ id: string; text: string }];
+        draftMessages: DraftMessage[];
       } | null = cache.readQuery({
         query: gql`
           query getDraftMessages @client {
@@ -69,7 +69,7 @@ export const resolvers = {
     //           automatically. how to refresh consumers of this query?
     draftMessageForChannels: (_: any, { channelIds }: { channelIds: string[] }, { cache }: { cache: ApolloCache<any> }) => {
       const allDraftMessagesResult: {
-        draftMessages: [{ id: string; text: string }];
+        draftMessages: DraftMessage[];
       } | null = cache.readQuery({
         query: gql`
           query getDraftMessages @client {

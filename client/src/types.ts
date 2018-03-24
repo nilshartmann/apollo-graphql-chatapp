@@ -1,11 +1,4 @@
-export interface User {
-  id: string;
-  name: string;
-}
-
-export interface Message {
+export interface DraftMessage {
   id: string;
   text: string;
-  date: string;
-  author: User;
 }

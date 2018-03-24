@@ -5,7 +5,6 @@ import { RouteComponentProps, Link } from "react-router-dom";
 import * as styles from "./Channel.scss";
 import * as classNames from "classnames";
 
-import { Message } from "../types";
 import { longDate } from "../utils";
 
 import { Row, Col } from "../layout";
