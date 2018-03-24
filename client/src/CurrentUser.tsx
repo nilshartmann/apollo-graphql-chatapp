@@ -14,11 +14,6 @@ const CURRENT_USER_CLIENT_QUERY = clientGql`
       id
       name
     }
-
-    draftMessages @client {
-      id
-      text
-    }
   }
 `;
 
@@ -30,8 +25,7 @@ export default function CurrentUser({ children }: CurrentUserProps) {
     <Query query={CURRENT_USER_CLIENT_QUERY}>
       {function({ loading, error, data }) {
         const { currentUser } = data;
-        console.log("DATA FROM CLIENT", data);
-        return currentUser ? children(currentUser) : <div>fsdfas</div>;
+        return children(currentUser);
       }}
     </Query>
   );

@@ -17,12 +17,12 @@ import {
   ChannelQueryVariables,
   ChannelQuery_channel,
   ChannelQuery_channel_messages
-} from "../__generated__/ChannelQuery";
+} from "./__generated__/ChannelQuery";
 import {
   PostNewMessageMutation,
   PostNewMessageMutationVariables,
   PostNewMessageMutation_postMessage
-} from "../__generated__/PostNewMessageMutation";
+} from "./__generated__/PostNewMessageMutation";
 
 import Avatar from "../components/Avatar";
 import Button from "../components/Button";
@@ -91,7 +91,6 @@ class MessagesList extends React.Component<MessagesListProps> {
     const scrollHeight = this.messageListRef.scrollHeight;
     const height = this.messageListRef.clientHeight;
     const maxScrollTop = scrollHeight - height;
-    console.log("ScrollToBottom ", scrollHeight, height, maxScrollTop);
     this.messageListRef.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
   };
 
@@ -141,11 +140,9 @@ interface ChannelProps extends RouteComponentProps<{ currentChannelId: string }>
 
 export default class Channel extends React.Component<ChannelProps> {
   publishDraftMessage = (client: ApolloClient<any>, currentChannelId: string, newValue: string) => {
-    console.log("NEW VALUE", newValue);
-    console.log("currentChannelId", currentChannelId);
     client.mutate({
-      mutation: gql`
-        mutation updateDraftMutation($channelId: string!, $text: string!) {
+      mutation: clientGql`
+        mutation updateDraftMutation($channelId: String!, $text: String!) {
           setDraftMessageForChannel(channelId: $channelId, text: $text) @client {
             id
             text
@@ -254,7 +251,6 @@ export default class Channel extends React.Component<ChannelProps> {
                       variables={{ channelId: currentChannelId }}
                     >
                       {({ data: result }) => {
-                        console.log("'### draftMessage", result);
                         const message = (result && result.draftMessageForChannel && result.draftMessageForChannel.text) || "";
                         return (
                           <MessageEditor

@@ -13,10 +13,11 @@ import { RouteComponentProps, Link } from "react-router-dom";
 
 import CurrentUser from "./CurrentUser";
 import { NewMessageSubscription } from "./__generated__/NewMessageSubscription";
+import { DraftMessage } from "./types";
 
 const NEW_MESSAGE_SUBSCRIPTION = gql`
-  subscription NewMessageSubscription {
-    messageAdded {
+  subscription NewMessageSubscription($channelIds: [String!]!) {
+    messageAdded(channelIds: $channelIds) {
       id
       date
       author {
@@ -82,19 +83,21 @@ export default function ChannelList({ match }: ChannelListProps) {
               return <h1>Please wait</h1>;
             }
 
+            const channelIds = data.channels.map(channel => channel.id);
+
             return (
               <React.Fragment>
-                {/* <NewMessageSubscriptionComponent query={NEW_MESSAGE_SUBSCRIPTION}>
+                <NewMessageSubscriptionComponent query={NEW_MESSAGE_SUBSCRIPTION} variables={{ channelIds }}>
                   {function({ data, loading, error }) {
                     console.log("SUBSCRIPTION loading: " + loading + " error: " + error);
                     console.log("             data");
                     console.log("NEW MESSAGE", data && data.messageAdded);
-                    return <h1>subscri</h1>;
+                    return <div>{data && JSON.stringify(data.messageAdded)}</div>;
                   }}
-                </NewMessageSubscriptionComponent> */}
+                </NewMessageSubscriptionComponent>
                 <Query query={DRAFT_MESSAGES_QUERY}>
                   {({ data: draftMessageQueryResult }) => {
-                    const draftMessages: [{ id: string; text: string }] = draftMessageQueryResult.draftMessages;
+                    const draftMessages: DraftMessage[] = draftMessageQueryResult.draftMessages;
 
                     const getDraftMessageForChannel = (channelId: string) => {
                       const r = draftMessages.find(dm => dm.id === channelId);
@@ -102,7 +105,6 @@ export default function ChannelList({ match }: ChannelListProps) {
                       return r ? r.text : null;
                     };
 
-                    console.log("draftMessageQueryResult", draftMessageQueryResult.draftMessages);
                     return data.channels.map(channel => (
                       <ChannelCard
                         key={channel.id}

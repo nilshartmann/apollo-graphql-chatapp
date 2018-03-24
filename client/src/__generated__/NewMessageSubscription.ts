@@ -23,6 +23,10 @@ export interface NewMessageSubscription {
   messageAdded: NewMessageSubscription_messageAdded;
 }
 
+export interface NewMessageSubscriptionVariables {
+  channelIds: string[];
+}
+
 //==============================================================
 // START Enums and Input Objects
 // All enums and input objects are included in every output file

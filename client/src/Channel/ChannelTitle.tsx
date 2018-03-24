@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Row, Col } from "../layout";
 import ArrowButton from "../components/ArrowButton";
-import { ChannelQuery_channel } from "../__generated__/ChannelQuery";
+import { ChannelQuery_channel } from "./__generated__/ChannelQuery";
 
 import * as styles from "./Channel.scss";
 

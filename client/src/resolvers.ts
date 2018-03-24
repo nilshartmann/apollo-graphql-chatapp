@@ -19,15 +19,14 @@ export const resolvers = {
       { channelId, text }: { channelId: string; text: string },
       { cache }: { cache: ApolloCache<any> }
     ) => {
-      console.log("###### setDraftMessageForChannel");
       const id = `DraftMessage:${channelId}`;
       const fragment = gql`
         fragment draftMessage on DraftMessage {
+          id
           text
         }
       `;
       const existingDraftMessage = cache.readFragment({ fragment, id }) as DraftMessage;
-      console.log("###### setDraftMessageForChannel existingDraftMessage", existingDraftMessage);
       if (existingDraftMessage) {
         // already available
         const data = { ...existingDraftMessage, text };
@@ -61,25 +60,21 @@ export const resolvers = {
         draftMessages: currentDraftMessages.draftMessages.concat([newDraftMessage])
       };
 
-      console.log("###### setDraftMessageForChannel data", data);
-
       cache.writeData({ data });
 
-      console.log("#### fertig");
       return newDraftMessage;
     }
   },
   Query: {
     draftMessageForChannel: (_: any, { channelId }: { channelId: string }, { cache }: { cache: ApolloCache<any> }) => {
-      console.log("draftMessageForChannel", channelId);
       const fragment = gql`
         fragment draftMessage on DraftMessage {
+          id
           text
         }
       `;
       const id = `DraftMessage:${channelId}`;
       const ret = cache.readFragment({ fragment, id }) as { text: string } | null;
-      console.log("draftMessageForChannel result", ret);
 
       return ret;
     }
