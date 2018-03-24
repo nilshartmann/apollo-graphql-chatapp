@@ -9,7 +9,7 @@ import { longDate } from "../utils";
 
 import { Row, Col } from "../layout";
 
-import { gql, ApolloClient } from "apollo-boost";
+import { gql, gql as clientGql, ApolloClient } from "apollo-boost";
 import { Query } from "react-apollo";
 
 import {
@@ -29,6 +29,7 @@ import Button from "../components/Button";
 
 import ChannelTitle from "./ChannelTitle";
 import MessageEditor from "./MessageEditor";
+import { DraftMessage } from "../types";
 
 const CHANNEL_QUERY = gql`
   query ChannelQuery($channelId: String!) {
@@ -140,6 +141,8 @@ interface ChannelProps extends RouteComponentProps<{ currentChannelId: string }>
 
 export default class Channel extends React.Component<ChannelProps> {
   publishDraftMessage = (client: ApolloClient<any>, currentChannelId: string, newValue: string) => {
+    console.log("NEW VALUE", newValue);
+    console.log("currentChannelId", currentChannelId);
     client.mutate({
       mutation: gql`
         mutation updateDraftMutation($channelId: string!, $text: string!) {
@@ -154,9 +157,16 @@ export default class Channel extends React.Component<ChannelProps> {
         authorId: "u5",
         text: newValue
       },
-      update: (proxy, { data }) => {
-        console.log("AFTER POST DRAFT", data);
-      }
+      // QUESTION: that is not so nice, as we have to know all other queries that
+      //           might depend on this mutation
+      refetchQueries: [
+        {
+          query: DRAFT_MESSAGE_FOR_CHANNEL_QUERY,
+          variables: {
+            channelId: currentChannelId
+          }
+        }
+      ]
     });
   };
 
@@ -236,10 +246,22 @@ export default class Channel extends React.Component<ChannelProps> {
                 <MessagesList channel={channel} />
                 <Row className={styles.Editor}>
                   <Col className={styles.Form}>
-                    <MessageEditor
-                      onMessageChange={currentValue => this.publishDraftMessage(client, currentChannelId, currentValue)}
-                      onNewMessage={newValue => this.postNewMessage(client, currentChannelId, newValue)}
-                    />
+                    <DraftMessageForChannelQuery
+                      query={DRAFT_MESSAGE_FOR_CHANNEL_QUERY}
+                      variables={{ channelId: currentChannelId }}
+                    >
+                      {({ data: result }) => {
+                        console.log("'### draftMessage", result);
+                        const message = (result && result.draftMessageForChannel && result.draftMessageForChannel.text) || "";
+                        return (
+                          <MessageEditor
+                            message={message}
+                            onMessageChange={currentValue => this.publishDraftMessage(client, currentChannelId, currentValue)}
+                            onNewMessage={newValue => this.postNewMessage(client, currentChannelId, newValue)}
+                          />
+                        );
+                      }}
+                    </DraftMessageForChannelQuery>
                   </Col>
                 </Row>
               </div>
@@ -250,3 +272,19 @@ export default class Channel extends React.Component<ChannelProps> {
     );
   }
 }
+
+interface QDraftMessageForChannel {
+  draftMessageForChannel: DraftMessage | null;
+}
+
+interface QDraftMessageForChannelVariables {
+  channelId: string;
+}
+
+const DRAFT_MESSAGE_FOR_CHANNEL_QUERY = clientGql`
+  query QGetDraftMessageForChannel($channelId: String!)  {
+    draftMessageForChannel(channelId: $channelId) @client
+  }
+  `;
+
+class DraftMessageForChannelQuery extends Query<QDraftMessageForChannel, QDraftMessageForChannelVariables> {}

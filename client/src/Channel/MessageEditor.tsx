@@ -3,44 +3,34 @@ import * as React from "react";
 import Button from "../components/Button";
 
 interface MessageEditorProps {
+  message: string;
   onMessageChange(currentMessage: string): void;
   onNewMessage(newMessage: string): void;
 }
 
-interface MessageEditorState {
-  newMessage: string;
-}
-
-export default class MessageEditor extends React.Component<MessageEditorProps, MessageEditorState> {
-  readonly state: MessageEditorState = {
-    newMessage: ""
-  };
-
-  onMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+export default class MessageEditor extends React.Component<MessageEditorProps> {
+  onMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newMessage = e.currentTarget.value;
 
-    this.setState({ newMessage });
     this.props.onMessageChange(newMessage);
   };
 
   onSendClick = () => {
-    const { newMessage } = this.state;
-    const { onNewMessage } = this.props;
+    let { onNewMessage, message } = this.props;
 
-    onNewMessage(newMessage.trim());
-    this.setState({ newMessage: "" });
+    onNewMessage(message);
   };
 
   render() {
-    const { newMessage } = this.state;
+    const { message = "" } = this.props;
 
-    const lines = (newMessage.match(/\n/g) || []).length + 1;
+    const lines = (message.match(/\n/g) || []).length + 1;
 
     return (
       <React.Fragment>
-        <textarea placeholder="Enter your message" value={newMessage} rows={lines} onChange={this.onMessageChange} />
+        <input placeholder="Enter your message" value={message} onChange={this.onMessageChange} />
 
-        <Button disabled={newMessage.trim().length === 0} onClick={this.onSendClick}>
+        <Button disabled={message.trim().length === 0} onClick={this.onSendClick}>
           Send
         </Button>
       </React.Fragment>
