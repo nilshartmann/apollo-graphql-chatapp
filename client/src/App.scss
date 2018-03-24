@@ -47,16 +47,16 @@
     line-height: 1;
   }
 
-  textarea,
-  textarea:active,
-  textarea:focus,
+  input,
+  input:active,
+  input:focus,
   button,
   button:active,
   button:focus {
     outline: none;
   }
 
-  textarea,
+  input,
   button {
     color: $color-text;
   }
