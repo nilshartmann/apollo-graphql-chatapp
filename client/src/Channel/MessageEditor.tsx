@@ -9,28 +9,47 @@ interface MessageEditorProps {
 }
 
 export default class MessageEditor extends React.Component<MessageEditorProps> {
+  onMessageKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.charCode === 13 && this.isValidMessage()) {
+      e.preventDefault();
+      this.onSend();
+
+      return false;
+    }
+  };
+
+  isValidMessage() {
+    const { message } = this.props;
+
+    return message.trim().length > 0;
+  }
+
   onMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newMessage = e.currentTarget.value;
 
     this.props.onMessageChange(newMessage);
   };
 
-  onSendClick = () => {
+  onSend = () => {
     let { onNewMessage, message } = this.props;
 
     onNewMessage(message);
   };
 
   render() {
-    const { message = "" } = this.props;
-
-    const lines = (message.match(/\n/g) || []).length + 1;
+    const { message } = this.props;
+    const sendButtonDisabled = !this.isValidMessage();
 
     return (
       <React.Fragment>
-        <input placeholder="Enter your message" value={message} onChange={this.onMessageChange} />
+        <input
+          placeholder="Enter your message"
+          value={message}
+          onKeyPress={this.onMessageKeyPress}
+          onChange={this.onMessageChange}
+        />
 
-        <Button disabled={message.trim().length === 0} onClick={this.onSendClick}>
+        <Button disabled={sendButtonDisabled} onClick={this.onSend}>
           Send
         </Button>
       </React.Fragment>

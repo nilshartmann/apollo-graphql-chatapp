@@ -8,8 +8,15 @@
 
   @include clickable();
 
+  cursor: pointer;
+
   &:focus,
   &:active {
     color: $color-light;
+  }
+
+  &:disabled {
+    color: lighten($color-text, 20%);
+    cursor: default;
   }
 }

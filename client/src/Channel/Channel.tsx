@@ -170,8 +170,8 @@ export default class Channel extends React.Component<ChannelProps> {
     });
   };
 
-  postNewMessage = (client: ApolloClient<any>, currentChannelId: string, newValue: string) => {
-    client.mutate<PostNewMessageMutation>({
+  postNewMessage = async (client: ApolloClient<any>, currentChannelId: string, newValue: string) => {
+    const mutationResult = await client.mutate<PostNewMessageMutation>({
       mutation: POST_NEW_MESSAGE,
       variables: {
         channelId: currentChannelId,
@@ -199,6 +199,9 @@ export default class Channel extends React.Component<ChannelProps> {
         proxy.writeQuery({ query: CHANNEL_QUERY, data: existingChannel });
       }
     });
+    if (!mutationResult.errors) {
+      this.publishDraftMessage(client, currentChannelId, "");
+    }
   };
 
   render() {
