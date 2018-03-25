@@ -191,9 +191,16 @@ export default class Channel extends React.Component<ChannelProps> {
           return;
         }
 
-        existingChannel.channel.messages.push(postMessage);
+        console.log("exstingChannel.channel");
+        console.dir(existingChannel.channel);
 
-        proxy.writeQuery({ query: CHANNEL_QUERY, data: existingChannel });
+        if (!existingChannel.channel.messages.find(m => m.id === postMessage.id)) {
+          console.log("Message add!");
+          existingChannel.channel.messages.push(postMessage);
+          proxy.writeQuery({ query: CHANNEL_QUERY, data: existingChannel });
+        } else {
+          console.log("Message with id " + postMessage.id + " already in channel " + existingChannel.channel.id);
+        }
       }
     });
     if (!mutationResult.errors) {

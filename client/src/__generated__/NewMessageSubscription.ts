@@ -12,11 +12,16 @@ export interface NewMessageSubscription_messageAdded_author {
   name: string;  // The readable name
 }
 
+export interface NewMessageSubscription_messageAdded_channel {
+  id: string;
+}
+
 export interface NewMessageSubscription_messageAdded {
   id: string;
   date: string;
-  author: NewMessageSubscription_messageAdded_author;
   text: string;
+  author: NewMessageSubscription_messageAdded_author;
+  channel: NewMessageSubscription_messageAdded_channel;
 }
 
 export interface NewMessageSubscription {

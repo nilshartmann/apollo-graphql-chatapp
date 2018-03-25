@@ -103,6 +103,12 @@ const resolvers = {
       console.log("New Message", newMessage);
 
       channel.messages = channel.messages.concat(newMessage);
+
+      pubsub.publish("messageAdded", {
+        messageAdded: newMessage,
+        channel: channel
+      });
+
       return newMessage;
     }
   },

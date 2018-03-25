@@ -12,19 +12,25 @@ import { ChannelListQuery, ChannelListQueryVariables } from "./__generated__/Cha
 import { RouteComponentProps, Link } from "react-router-dom";
 
 import CurrentUser from "./CurrentUser";
-import { NewMessageSubscription } from "./__generated__/NewMessageSubscription";
+import { NewMessageSubscription, NewMessageSubscription_messageAdded } from "./__generated__/NewMessageSubscription";
 import { DraftMessage } from "./types";
+import { ChannelQuery, ChannelQuery_channel } from "./Channel/__generated__/ChannelQuery";
 
 const NEW_MESSAGE_SUBSCRIPTION = gql`
   subscription NewMessageSubscription($channelIds: [String!]!) {
     messageAdded(channelIds: $channelIds) {
       id
       date
+      text
+
       author {
         id
         name
       }
-      text
+
+      channel {
+        id
+      }
     }
   }
 `;
@@ -69,7 +75,7 @@ export default function ChannelList({ match }: ChannelListProps) {
             memberId: currentUserId
           }}
         >
-          {({ loading, error, subscribeToMore, data = { channels: [] } }) => {
+          {({ loading, error, subscribeToMore, client, data = { channels: [] } }) => {
             if (error) {
               return (
                 <div>
@@ -83,18 +89,89 @@ export default function ChannelList({ match }: ChannelListProps) {
               return <h1>Please wait</h1>;
             }
 
-            const channelIds = data.channels.map(channel => channel.id);
+            subscribeToMore({
+              document: NEW_MESSAGE_SUBSCRIPTION,
+              variables: {
+                channelIds: data.channels.map(channel => channel.id)
+              },
+              updateQuery: (prev, { subscriptionData }) => {
+                // QUESTION: why is updatequery untyped ???
+                console.log("UPDATE QUERY prev:", prev);
+                console.log("UPDATE QUERY cur", subscriptionData);
+
+                const data: NewMessageSubscription | null = subscriptionData.data;
+
+                if (!data) return prev;
+
+                const bla: any = prev;
+                const existingChannels: ChannelQuery_channel[] = bla.channels;
+
+                const updateChannel = (c: ChannelQuery_channel, newLatestMessage: NewMessageSubscription_messageAdded) => {
+                  const newMessage = { ...data.messageAdded, text: data.messageAdded.text + "ZZ" };
+                  const updatedChannel = Object.assign({}, c, { latestMessage: data.messageAdded });
+                  return updatedChannel;
+                };
+
+                const newChannels = existingChannels.map(
+                  ec => (ec.id === data.messageAdded.channel.id ? updateChannel(ec, data.messageAdded) : ec)
+                );
+
+                const f: any = client.readFragment({
+                  id: `Channel:${data.messageAdded.channel.id}`,
+                  fragment: gql`
+                    fragment myChannel on Channel {
+                      messages {
+                        id
+                        text
+                      }
+                    }
+                  `
+                });
+
+                console.log("f: ===>");
+                console.dir(f);
+
+                const newChannelList = { ...f, messages: f.messages.concat(data.messageAdded) };
+
+                console.log("newChannelList: ===>");
+                console.dir(newChannelList);
+
+                if (!f.messages.find((m: any) => m.id === data.messageAdded.id)) {
+                  console.log(`Add Message with id ${data.messageAdded.id} (${data.messageAdded.text})...`);
+                  client.writeFragment({
+                    id: `Channel:${data.messageAdded.channel.id}`,
+                    fragment: gql`
+                      fragment myChannel on Channel {
+                        messages {
+                          id
+                          text
+                        }
+                      }
+                    `,
+                    data: newChannelList
+                  });
+                } else {
+                  console.log(` Message with id ${data.messageAdded.id} (${data.messageAdded.text}) already in cache...`);
+                }
+
+                // return prev;
+
+                return Object.assign({}, prev, {
+                  channels: newChannels
+                });
+              }
+            });
 
             return (
               <React.Fragment>
-                <NewMessageSubscriptionComponent query={NEW_MESSAGE_SUBSCRIPTION} variables={{ channelIds }}>
+                {/* <NewMessageSubscriptionComponent query={NEW_MESSAGE_SUBSCRIPTION} variables={{ channelIds }}>
                   {function({ data, loading, error }) {
                     console.log("SUBSCRIPTION loading: " + loading + " error: " + error);
                     console.log("             data");
                     console.log("NEW MESSAGE", data && data.messageAdded);
                     return <div>{data && JSON.stringify(data.messageAdded)}</div>;
                   }}
-                </NewMessageSubscriptionComponent>
+                </NewMessageSubscriptionComponent> */}
                 <Query query={DRAFT_MESSAGES_QUERY}>
                   {({ data: draftMessageQueryResult }) => {
                     const draftMessages: DraftMessage[] = draftMessageQueryResult.draftMessages;
