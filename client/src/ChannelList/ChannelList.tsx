@@ -3,18 +3,18 @@ import * as React from "react";
 import * as styles from "./ChannelList.scss";
 import * as classNames from "classnames";
 
-import { Row, Col } from "./layout";
+import { Row, Col } from "../layout";
 
 import { gql, gql as clientGql } from "apollo-boost";
 import { Query, Subscription } from "react-apollo";
-import { timeOnly } from "./utils";
+import { timeOnly } from "../utils";
 import { ChannelListQuery, ChannelListQueryVariables } from "./__generated__/ChannelListQuery";
 import { RouteComponentProps, Link } from "react-router-dom";
 
-import CurrentUser from "./CurrentUser";
+import CurrentUser from "../CurrentUser";
 import { NewMessageSubscription, NewMessageSubscription_messageAdded } from "./__generated__/NewMessageSubscription";
-import { DraftMessage } from "./types";
-import { ChannelQuery, ChannelQuery_channel } from "./Channel/__generated__/ChannelQuery";
+import { DraftMessage } from "../types";
+import { ChannelQuery, ChannelQuery_channel } from "../Channel/__generated__/ChannelQuery";
 
 const NEW_MESSAGE_SUBSCRIPTION = gql`
   subscription NewMessageSubscription($channelIds: [String!]!) {
@@ -116,16 +116,18 @@ export default function ChannelList({ match }: ChannelListProps) {
                   ec => (ec.id === data.messageAdded.channel.id ? updateChannel(ec, data.messageAdded) : ec)
                 );
 
+                const myChannel = gql`
+                  fragment myChannel on Channel {
+                    messages {
+                      id
+                      text
+                    }
+                  }
+                `;
+
                 const f: any = client.readFragment({
                   id: `Channel:${data.messageAdded.channel.id}`,
-                  fragment: gql`
-                    fragment myChannel on Channel {
-                      messages {
-                        id
-                        text
-                      }
-                    }
-                  `
+                  fragment: myChannel
                 });
 
                 console.log("f: ===>");
@@ -140,14 +142,7 @@ export default function ChannelList({ match }: ChannelListProps) {
                   console.log(`Add Message with id ${data.messageAdded.id} (${data.messageAdded.text})...`);
                   client.writeFragment({
                     id: `Channel:${data.messageAdded.channel.id}`,
-                    fragment: gql`
-                      fragment myChannel on Channel {
-                        messages {
-                          id
-                          text
-                        }
-                      }
-                    `,
+                    fragment: myChannel,
                     data: newChannelList
                   });
                 } else {

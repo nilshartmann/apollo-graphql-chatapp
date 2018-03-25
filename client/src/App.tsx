@@ -10,13 +10,14 @@ import { Query } from "react-apollo";
 import { Grid, Row, Col } from "./layout";
 
 import CurrentUser from "./CurrentUser";
-import ChannelList from "./ChannelList";
+import ChannelList from "./ChannelList/ChannelList";
 import Channel from "./Channel";
 import Avatar from "./components/Avatar";
 
 import channels from "../../server/src/mocks/channels";
 import { Switch, Route, Redirect } from "react-router-dom";
 const HOME = "https://github.com/nilshartmann/apollo-graphql-chatapp";
+
 export default function App() {
   return (
     <React.Fragment>
