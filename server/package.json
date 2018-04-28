@@ -1,5 +1,5 @@
 {
-  "name": "vscode-typescript-starter",
+  "name": "apollo-graphql-chatapp-server",
   "version": "1.0.0",
   "main": "dist/main.js",
   "license": "MIT",
@@ -8,13 +8,11 @@
     "name": "Nils Hartmann",
     "url": "https://nilshartmann.net"
   },
-  "description": "A simple starter workspace for TypeScript Development with Visual Studio code",
+  "description": "Apollo GraphQL ChatApp Example (Server)",
   "keywords": [
-    "visual studio code",
-    "typescript",
-    "javascript",
-    "vscode",
-    "starter kit"
+    "apollo graphql",
+    "graphql",
+    "typescript"
   ],
   "scripts": {
     "build": "tsc",
@@ -34,13 +32,13 @@
   },
   "dependencies": {
     "@types/graphql": "^0.12.5",
-    "apollo-server-express": "^1.3.2",
+    "apollo-server-express": "^1.3.6",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "express": "^4.16.3",
     "graphql": "^0.13.2",
     "graphql-subscriptions": "^0.5.8",
-    "graphql-tools": "^2.23.1",
+    "graphql-tools": "^3.0.0",
     "subscriptions-transport-ws": "^0.9.6",
     "tslint": "^5.7.0"
   }
