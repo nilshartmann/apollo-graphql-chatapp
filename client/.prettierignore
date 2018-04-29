@@ -6,3 +6,4 @@ lib/
 package.json
 
 .fonts/fonts.css
+__generated__/

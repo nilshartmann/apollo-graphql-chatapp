@@ -24,7 +24,7 @@
     "dist": "webpack",
     "webpack": "webpack --watch",
     "devserver": "webpack-dev-server --content-base public/",
-    "prettier": "prettier --print-width 130 --write \"{src}/**/*.{js,jsx,ts,tsx}\"",
+    "prettier": "prettier --print-width 130 --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "gql:schema": "apollo-codegen introspect-schema http://localhost:3000/graphql --output chatapp-schema.json",
     "gql:codegen": "apollo-codegen generate 'src/**/*.tsx' --schema chatapp-schema.json --target ts-modern --output src",
     "gql": "yarn gql:schema && yarn gql:codegen"
