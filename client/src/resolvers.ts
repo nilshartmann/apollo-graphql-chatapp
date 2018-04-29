@@ -1,12 +1,7 @@
-import ApolloClient, { gql } from "./boost_patch/ApolloClientWithWebsockets";
+import ApolloClient, { gql as clientGql } from "./boost_patch/ApolloClientWithWebsockets";
 import { ApolloCache } from "apollo-cache";
 import { DraftMessage } from "./types";
 export const defaults = {
-  currentUser: {
-    __typename: "CurrentUser",
-    id: "u5",
-    name: "Maja"
-  },
   draftMessages: []
 };
 
@@ -20,7 +15,7 @@ export const resolvers = {
       { cache }: { cache: ApolloCache<any> }
     ) => {
       const id = `DraftMessage:${channelId}`;
-      const fragment = gql`
+      const fragment = clientGql`
         fragment draftMessage on DraftMessage {
           id
           text
@@ -37,7 +32,7 @@ export const resolvers = {
       const currentDraftMessages: {
         draftMessages: DraftMessage[];
       } | null = cache.readQuery({
-        query: gql`
+        query: clientGql`
           query getDraftMessages @client {
             draftMessages {
               id
@@ -67,7 +62,7 @@ export const resolvers = {
   },
   Query: {
     draftMessageForChannel: (_: any, { channelId }: { channelId: string }, { cache }: { cache: ApolloCache<any> }) => {
-      const fragment = gql`
+      const fragment = clientGql`
         fragment draftMessage on DraftMessage {
           id
           text

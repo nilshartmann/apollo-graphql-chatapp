@@ -2,8 +2,8 @@ import * as React from "react";
 import * as styles from "./ArrowButton.scss";
 
 const Icons = {
-  up: require("./Arrow_Up.svg"),
-  down: require("./Arrow_Down.svg")
+  up: require("./assets/Arrow_Up.svg"),
+  down: require("./assets/Arrow_Down.svg")
 };
 
 interface ArrowButtonProps extends React.ImgHTMLAttributes<{}> {

@@ -4,32 +4,20 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL subscription operation: NewMessageSubscription
+// GraphQL query operation: GetUserByIdQuery
 // ====================================================
 
-export interface NewMessageSubscription_messageAdded_author {
+export interface GetUserByIdQuery_user {
   id: string;
   name: string;  // The readable name
 }
 
-export interface NewMessageSubscription_messageAdded_channel {
-  id: string;  // Unique identifier
+export interface GetUserByIdQuery {
+  user: GetUserByIdQuery_user | null;
 }
 
-export interface NewMessageSubscription_messageAdded {
-  id: string;
-  date: string;
-  text: string;
-  author: NewMessageSubscription_messageAdded_author;
-  channel: NewMessageSubscription_messageAdded_channel;
-}
-
-export interface NewMessageSubscription {
-  messageAdded: NewMessageSubscription_messageAdded;
-}
-
-export interface NewMessageSubscriptionVariables {
-  channelIds: string[];
+export interface GetUserByIdQueryVariables {
+  userId: string;
 }
 
 //==============================================================

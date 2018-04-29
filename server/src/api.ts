@@ -1,11 +1,4 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-import { createServer } from "http";
-import { execute, subscribe } from "graphql";
-const { graphqlExpress, graphiqlExpress } = require("apollo-server-express");
 const { makeExecutableSchema } = require("graphql-tools");
-import { SubscriptionServer } from "subscriptions-transport-ws";
 
 import { PubSub, withFilter } from "graphql-subscriptions";
 import users from "./mocks/users";
@@ -44,6 +37,7 @@ const typeDefs = `
 
   type Query { 
     channels(memberId: String): [Channel!]! 
+    user(userId: String!): User
     users: [User!]! 
     channel(channelId: String!): Channel
   }
@@ -83,7 +77,8 @@ const resolvers = {
     channels: (_: any, args: { memberId?: string }) =>
       args.memberId ? channels.filter(c => c.members.find(m => m.id === args.memberId) !== undefined) : channels,
     channel: (obj: any, args: { channelId: string }) => channels.find(c => c.id === args.channelId),
-    users: () => users
+    users: () => users,
+    user: (obj: any, args: { userId: string }) => users.find(u => u.id === args.userId)
   },
   Mutation: {
     postMessage: (_: any, args: { channelId: string; authorId: string; message: string }) => {
@@ -153,57 +148,24 @@ const schema = makeExecutableSchema({
   resolvers
 });
 
-// Initialize the app
-const app = express();
+export default schema;
 
-app.use(cors());
+// const GENERATE_DUMMY_MESSAGES = false;
 
-// The GraphQL endpoint
-app.use("/graphql", bodyParser.json(), graphqlExpress({ schema }));
-
-// GraphiQL, a visual editor for queries
-app.use(
-  "/graphiql",
-  graphiqlExpress({
-    endpointURL: "/graphql",
-    subscriptionsEndpoint: `ws://localhost:3000/subscriptions`
-  })
-);
-
-// Start the server
-const ws = createServer(app).listen(3000, () => {
-  // Set up the WebSocket for handling GraphQL subscriptions
-  new SubscriptionServer(
-    {
-      execute,
-      subscribe,
-      schema
-    },
-    {
-      server: ws,
-      path: "/subscriptions"
-    }
-  );
-
-  console.log(`GraphQL Server is now running on http://localhost:3000`);
-});
-
-const GENERATE_DUMMY_MESSAGES = false;
-
-GENERATE_DUMMY_MESSAGES &&
-  setInterval(() => {
-    const newMessageId = messageIdCounter++;
-    const channel = newMessageId % 2 ? channels[0] : channels[1];
-    console.log(`PUBLISH NEW MESSAGE ${newMessageId} to channel ${channel.id} (${channel.title})`);
-    const newMessage: Message = {
-      id: `am-${newMessageId}`,
-      text: `Auto Message ${newMessageId} in ${channel.title}`,
-      date: new Date().toISOString(),
-      author: users[Math.floor(Math.random() * users.length)]
-    };
-    channel.messages = channel.messages.concat(newMessage);
-    pubsub.publish("messageAdded", {
-      messageAdded: newMessage,
-      channel: channel
-    });
-  }, 2000);
+// GENERATE_DUMMY_MESSAGES &&
+//   setInterval(() => {
+//     const newMessageId = messageIdCounter++;
+//     const channel = newMessageId % 2 ? channels[0] : channels[1];
+//     console.log(`PUBLISH NEW MESSAGE ${newMessageId} to channel ${channel.id} (${channel.title})`);
+//     const newMessage: Message = {
+//       id: `am-${newMessageId}`,
+//       text: `Auto Message ${newMessageId} in ${channel.title}`,
+//       date: new Date().toISOString(),
+//       author: users[Math.floor(Math.random() * users.length)]
+//     };
+//     channel.messages = channel.messages.concat(newMessage);
+//     pubsub.publish("messageAdded", {
+//       messageAdded: newMessage,
+//       channel: channel
+//     });
+//   }, 2000);

@@ -25,8 +25,8 @@ export interface ChannelQuery_channel_messages {
 }
 
 export interface ChannelQuery_channel {
-  id: string;
-  title: string;
+  id: string;     // Unique identifier
+  title: string;  // Human-readable title of this Channel
   members: ChannelQuery_channel_members[];
   messages: ChannelQuery_channel_messages[];
 }

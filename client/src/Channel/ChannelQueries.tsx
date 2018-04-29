@@ -43,6 +43,11 @@ export const POST_NEW_MESSAGE_MUTATION = gql`
   }
 `;
 
+// use "clientGql" here as apollo codegen does not work
+// with @client directive currently
+// (https://github.com/apollographql/apollo-codegen/issues/366)
+// as apollo codegen only looks for 'gql' tag,
+// it ignores this query
 export const UPDATE_DRAFT_CLIENT_MUTATION = clientGql`
   mutation updateDraftMutation($channelId: String!, $text: String!) {
     setDraftMessageForChannel(channelId: $channelId, text: $text) @client {

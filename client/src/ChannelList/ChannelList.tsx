@@ -11,7 +11,7 @@ import { timeOnly } from "../utils";
 import { ChannelListQuery, ChannelListQueryVariables } from "./__generated__/ChannelListQuery";
 import { RouteComponentProps, Link } from "react-router-dom";
 
-import CurrentUser from "../CurrentUser";
+import { CurrentUser } from "../components";
 import { NewMessageSubscription, NewMessageSubscription_messageAdded } from "./__generated__/NewMessageSubscription";
 import { DraftMessage } from "../types";
 import { ChannelQuery, ChannelQuery_channel } from "../Channel/__generated__/ChannelQuery";

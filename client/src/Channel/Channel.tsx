@@ -28,16 +28,19 @@ import {
 import { NotFound } from "./NotFound";
 import ChannelError from "./ChannelError";
 import ChannelLoadingIndicator from "./ChannelLoadingIndicator";
+import { getLocalUserId } from "../authService";
 
 interface ChannelProps extends RouteComponentProps<{ currentChannelId: string }> {}
 
 export default class Channel extends React.Component<ChannelProps> {
   publishDraftMessage = (client: ApolloClient<any>, currentChannelId: string, newValue: string) => {
+    const userId = getLocalUserId();
+
     client.mutate({
       mutation: UPDATE_DRAFT_CLIENT_MUTATION,
       variables: {
         channelId: currentChannelId,
-        authorId: "u5",
+        authorId: userId,
         text: newValue
       },
       // QUESTION: that is not so nice, as we have to know all other queries that
@@ -54,11 +57,12 @@ export default class Channel extends React.Component<ChannelProps> {
   };
 
   postNewMessage = async (client: ApolloClient<any>, currentChannelId: string, newValue: string) => {
+    const userId = getLocalUserId();
     const mutationResult = await client.mutate<PostNewMessageMutation>({
       mutation: POST_NEW_MESSAGE_MUTATION,
       variables: {
         channelId: currentChannelId,
-        authorId: "u5",
+        authorId: userId,
         message: newValue
       } as PostNewMessageMutationVariables,
       update: (proxy, { data }) => {

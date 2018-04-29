@@ -20,9 +20,9 @@ export interface ChannelListQuery_channels_latestMessage {
 }
 
 export interface ChannelListQuery_channels {
-  id: string;
-  title: string;
-  latestMessage: ChannelListQuery_channels_latestMessage;
+  id: string;                                              // Unique identifier
+  title: string;                                           // Human-readable title of this Channel
+  latestMessage: ChannelListQuery_channels_latestMessage;  // The newest message that have been posted to this channel
 }
 
 export interface ChannelListQuery {

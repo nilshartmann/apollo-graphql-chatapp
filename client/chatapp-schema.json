@@ -52,6 +52,33 @@
               "deprecationReason": null
             },
             {
+              "name": "user",
+              "description": "",
+              "args": [
+                {
+                  "name": "userId",
+                  "description": "",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "User",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "users",
               "description": "",
               "args": [],
@@ -125,7 +152,7 @@
           "fields": [
             {
               "name": "id",
-              "description": "",
+              "description": "Unique identifier",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -141,7 +168,7 @@
             },
             {
               "name": "title",
-              "description": "",
+              "description": "Human-readable title of this Channel",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -205,7 +232,7 @@
             },
             {
               "name": "latestMessage",
-              "description": "",
+              "description": "The newest message that have been posted to this channel",
               "args": [],
               "type": {
                 "kind": "NON_NULL",

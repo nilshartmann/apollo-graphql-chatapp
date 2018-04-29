@@ -1,13 +1,13 @@
-@import "./vars";
+@import "../vars";
 
 // Use ":global" to avoid CSS Module names generated for/from
 // bootstrap classes (i.e. col-sg-5_HASH). We use bootstrap
 // directly without CSS Modules
 :global {
   // see: https://getbootstrap.com/docs/4.0/getting-started/theming/#sass
-  @import "./layout/bootstrap/scss/bootstrap-reboot";
-  @import "./layout/bootstrap/scss/bootstrap-grid";
-  @import "./layout/bootstrap/scss/utilities";
+  @import "../layout/bootstrap/scss/bootstrap-reboot";
+  @import "../layout/bootstrap/scss/bootstrap-grid";
+  @import "../layout/bootstrap/scss/utilities";
 
   html,
   body {
