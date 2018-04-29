@@ -21,12 +21,15 @@ const typeDefs = `
   }
 
   type Channel {
+    """Unique identifier"""
     id: String!
 
+    """Human-readable title of this Channel"""
     title: String!
     members: [User!]!
     messages: [Message!]!
 
+    """The newest message that have been posted to this channel"""
     latestMessage: Message!
   }
 

@@ -1,154 +1,40 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import { RouteComponentProps, Link } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 
 import * as styles from "./Channel.scss";
-import * as classNames from "classnames";
 
-import { longDate } from "../utils";
+import { Col, Row } from "../layout";
 
-import { Row, Col } from "../layout";
-
-import { gql, gql as clientGql, ApolloClient } from "apollo-boost";
-import { Query } from "react-apollo";
-
-import {
-  ChannelQuery,
-  ChannelQueryVariables,
-  ChannelQuery_channel,
-  ChannelQuery_channel_messages
-} from "./__generated__/ChannelQuery";
+import { ChannelQueryVariables } from "./__generated__/ChannelQuery";
 import {
   PostNewMessageMutation,
-  PostNewMessageMutationVariables,
-  PostNewMessageMutation_postMessage
+  PostNewMessageMutation_postMessage,
+  PostNewMessageMutationVariables
 } from "./__generated__/PostNewMessageMutation";
-
-import Avatar from "../components/Avatar";
-import Button from "../components/Button";
-
-import ChannelTitle from "./ChannelTitle";
 import MessageEditor from "./MessageEditor";
 import { DraftMessage } from "../types";
 
-const CHANNEL_QUERY = gql`
-  query ChannelQuery($channelId: String!) {
-    #draftMessage @client {
-    #  text
-    #}
-    channel(channelId: $channelId) {
-      id
-      title
-      members {
-        id
-        name
-      }
-      messages {
-        id
-        text
-        date
-        author {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
-
-// const UPDATE_DRAFT_MESSAGE = gql`
-//   mutation UpdateDraftMessage($channelId: String!, $newText: String!) {
-//     updateDraftMessage(channelId: $channelId, newText: $newText) @client
-//   }
-// `;
-class ChannelQueryComponent extends Query<ChannelQuery, ChannelQueryVariables> {}
-
-const POST_NEW_MESSAGE = gql`
-  mutation PostNewMessageMutation($channelId: String!, $authorId: String!, $message: String!) {
-    postMessage(channelId: $channelId, authorId: $authorId, message: $message) {
-      id
-      text
-      date
-      author {
-        name
-        id
-      }
-    }
-  }
-`;
-
-interface MessagesListProps {
-  channel: ChannelQuery_channel;
-}
-class MessagesList extends React.Component<MessagesListProps> {
-  messageListRef: HTMLDivElement | null = null;
-  scrollAtBottom: boolean = true;
-
-  scrollToBottom = () => {
-    if (!this.messageListRef) {
-      return;
-    }
-    const scrollHeight = this.messageListRef.scrollHeight;
-    const height = this.messageListRef.clientHeight;
-    const maxScrollTop = scrollHeight - height;
-    this.messageListRef.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
-  };
-
-  componentWillUpdate(nextProps: MessagesListProps) {
-    const newMessageArrived = nextProps.channel.messages.length !== this.props.channel.messages.length;
-    if (!newMessageArrived || !this.messageListRef) {
-      return;
-    }
-    const scrollPos = this.messageListRef.scrollTop;
-    const scrollBottom = this.messageListRef.scrollHeight - this.messageListRef.clientHeight;
-    this.scrollAtBottom = scrollBottom <= 0 || scrollPos === scrollBottom;
-  }
-
-  componentDidMount() {
-    this.scrollToBottom();
-  }
-
-  componentDidUpdate() {
-    if (this.scrollAtBottom) {
-      this.scrollToBottom();
-    }
-  }
-  render() {
-    const { channel } = this.props;
-    return (
-      <div className={styles.MessagesList} ref={r => (this.messageListRef = r)}>
-        <ChannelTitle channel={channel} />
-
-        {channel.messages.map(message => (
-          <Row key={message.id} className={styles.Message}>
-            <Col xs={2}>
-              <Avatar userId={message.author.id} />
-            </Col>
-            <Col>
-              <h1>{message.author.name}</h1>
-              <div className={styles.Text}>{message.text}</div>
-              <div className={styles.Date}>{longDate(message.date)}</div>
-            </Col>
-          </Row>
-        ))}
-      </div>
-    );
-  }
-}
+import { ApolloClient } from "apollo-boost";
+import MessageList from "./MessageList";
+import {
+  ChannelQuery,
+  CHANNEL_QUERY,
+  POST_NEW_MESSAGE_MUTATION,
+  UPDATE_DRAFT_CLIENT_MUTATION,
+  ChannelQueryResult,
+  DRAFT_MESSAGE_FOR_CHANNEL_QUERY,
+  DraftMessageForChannelQuery
+} from "./ChannelQueries";
+import { NotFound } from "./NotFound";
+import ChannelError from "./ChannelError";
+import ChannelLoadingIndicator from "./ChannelLoadingIndicator";
 
 interface ChannelProps extends RouteComponentProps<{ currentChannelId: string }> {}
 
 export default class Channel extends React.Component<ChannelProps> {
   publishDraftMessage = (client: ApolloClient<any>, currentChannelId: string, newValue: string) => {
     client.mutate({
-      mutation: clientGql`
-        mutation updateDraftMutation($channelId: String!, $text: String!) {
-          setDraftMessageForChannel(channelId: $channelId, text: $text) @client {
-            id
-            text
-          }
-        }
-      `,
+      mutation: UPDATE_DRAFT_CLIENT_MUTATION,
       variables: {
         channelId: currentChannelId,
         authorId: "u5",
@@ -169,7 +55,7 @@ export default class Channel extends React.Component<ChannelProps> {
 
   postNewMessage = async (client: ApolloClient<any>, currentChannelId: string, newValue: string) => {
     const mutationResult = await client.mutate<PostNewMessageMutation>({
-      mutation: POST_NEW_MESSAGE,
+      mutation: POST_NEW_MESSAGE_MUTATION,
       variables: {
         channelId: currentChannelId,
         authorId: "u5",
@@ -180,7 +66,7 @@ export default class Channel extends React.Component<ChannelProps> {
         if (!postMessage) {
           return;
         }
-        const existingChannel = proxy.readQuery<ChannelQuery>({
+        const existingChannel = proxy.readQuery<ChannelQueryResult>({
           query: CHANNEL_QUERY,
           variables: {
             channelId: currentChannelId
@@ -212,45 +98,24 @@ export default class Channel extends React.Component<ChannelProps> {
     const { match: { params: { currentChannelId } } } = this.props;
     return (
       <div className={styles.Channel}>
-        <ChannelQueryComponent query={CHANNEL_QUERY} variables={{ channelId: currentChannelId }}>
+        <ChannelQuery query={CHANNEL_QUERY} variables={{ channelId: currentChannelId }}>
           {({ loading, error, data, client }) => {
             if (loading) {
-              return (
-                <Row className={styles.Title}>
-                  <Col>
-                    <h1>Loading Data...</h1>
-                  </Col>
-                </Row>
-              );
+              return <ChannelLoadingIndicator />;
             }
 
             if (error) {
-              return (
-                <Row className={styles.Title}>
-                  <Col>
-                    <h1>Error</h1>
-                    <p>
-                      <pre>{JSON.stringify(error)}</pre>
-                    </p>
-                  </Col>
-                </Row>
-              );
+              return <ChannelError error={error} />;
             }
 
             if (!data || !data.channel) {
-              return (
-                <Row className={styles.Title}>
-                  <Col>
-                    <h1>Not Found</h1>
-                    <p>Channel not found</p>
-                  </Col>
-                </Row>
-              );
+              return <NotFound />;
             }
+
             const { channel } = data;
             return (
               <div className={styles.XXX}>
-                <MessagesList channel={channel} />
+                <MessageList channel={channel} />
                 <Row className={styles.Editor}>
                   <Col className={styles.Form}>
                     <DraftMessageForChannelQuery
@@ -273,24 +138,8 @@ export default class Channel extends React.Component<ChannelProps> {
               </div>
             );
           }}
-        </ChannelQueryComponent>
+        </ChannelQuery>
       </div>
     );
   }
 }
-
-interface QDraftMessageForChannel {
-  draftMessageForChannel: DraftMessage | null;
-}
-
-interface QDraftMessageForChannelVariables {
-  channelId: string;
-}
-
-const DRAFT_MESSAGE_FOR_CHANNEL_QUERY = clientGql`
-  query QGetDraftMessageForChannel($channelId: String!)  {
-    draftMessageForChannel(channelId: $channelId) @client
-  }
-  `;
-
-class DraftMessageForChannelQuery extends Query<QDraftMessageForChannel, QDraftMessageForChannelVariables> {}
