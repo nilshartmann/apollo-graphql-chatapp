@@ -72,10 +72,16 @@ const fakeChannels = CHANNELS.map((c, ix) => {
         date: faker.date.past(0.2, "2018-04-29T08:59:42+01:00").toISOString(),
         text: lorem
       }))
-      .sort((m1, m2) => new Date(m1.date).getTime() - new Date(m2.date).getTime())
+      .sort((m1, m2) => {
+        const r = new Date(m1.date).getTime() - new Date(m2.date).getTime();
+        if (r === 0) {
+          return m1.id.localeCompare(m2.id);
+        }
+        return r;
+      })
   };
 });
 
-console.log(JSON.stringify(fakeChannels, null, 2));
+// console.log(JSON.stringify(fakeChannels, null, 2));
 
 export default fakeChannels;

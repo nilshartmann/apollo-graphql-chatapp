@@ -12,7 +12,7 @@ import { graphqlExpress, graphiqlExpress } from "apollo-server-express";
 import { SubscriptionServer } from "subscriptions-transport-ws";
 import { PubSub, withFilter } from "graphql-subscriptions";
 
-import schema from "./api";
+import schema, { ResolverContext } from "./api";
 
 // hmmm... 😱
 import users from "./mocks/users";
@@ -62,8 +62,11 @@ app.use(
   }),
   graphqlExpress(
     req =>
-      console.log(req && req.user) || {
-        schema
+      console.log("User from token", req && req.user) || {
+        schema,
+        currentUserId: {
+          user: req && req.user && req.user.userId
+        } as ResolverContext
       }
   )
 );

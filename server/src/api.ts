@@ -4,6 +4,10 @@ import { PubSub, withFilter } from "graphql-subscriptions";
 import users from "./mocks/users";
 import channels from "./mocks/faker";
 
+export interface ResolverContext {
+  currentUserId?: string;
+}
+
 // The GraphQL schema in string form
 const typeDefs = `
   type User {
@@ -36,12 +40,43 @@ const typeDefs = `
     channel: Channel!
   }
 
+  type PageInfo {
+		hasNextPage: Boolean!
+		hasPreviousPage: Boolean!
+	}
+
+  type SearchMessagesResultEdge {
+    cursor: String!
+    node: Message!
+  }
+
+  type SearchMessagesResultConnection {
+    edges: [SearchMessagesResultEdge!]!
+    pageInfo: PageInfo!
+  }
+
 
   type Query { 
+    """All Channels that contain the specified Member"""
     channels(memberId: String): [Channel!]! 
+
+    """The User with the specified id"""
     user(userId: String!): User
+
+    """All Users"""
     users: [User!]! 
+
+    """The Channel with the given id"""
     channel(channelId: String!): Channel
+
+    # https://facebook.github.io/relay/graphql/connections.htm
+    """Searches for messsages that contain the specified search string
+    
+    All channels **the current user belongs to** are searched.
+    If there is no logged in user, nothing will be searched.
+    
+    """
+    searchMessages(searchString: String!, first: Int = 10, after: String): SearchMessagesResultConnection!
   }
 
   type Mutation {
@@ -71,6 +106,21 @@ interface Message {
   author: User;
 }
 
+interface PageInfo {
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+interface SearchMessagesResultEdge {
+  cursor: string;
+  node: Message;
+}
+
+interface SearchMessagesResultConnection {
+  edges: SearchMessagesResultEdge[];
+  pageInfo: PageInfo;
+}
+
 let messageIdCounter = 10000;
 const pubsub = new PubSub();
 // The resolvers
@@ -80,7 +130,69 @@ const resolvers = {
       args.memberId ? channels.filter(c => c.members.find(m => m.id === args.memberId) !== undefined) : channels,
     channel: (obj: any, args: { channelId: string }) => channels.find(c => c.id === args.channelId),
     users: () => users,
-    user: (obj: any, args: { userId: string }) => users.find(u => u.id === args.userId)
+    user: (obj: any, args: { userId: string }) => users.find(u => u.id === args.userId),
+    searchMessages: (
+      _: any,
+      args: { searchString: string; first: number; after?: string },
+      context: ResolverContext
+    ): SearchMessagesResultConnection => {
+      console.log("search for " + JSON.stringify(args, null, 2) + ", CONTEXT", context);
+
+      // workaround...
+      const theUserId = "u6";
+
+      const messagesFound: Message[] = [];
+
+      channels
+        // search only channels, the user is member of
+        .filter(c => c.members.find(m => m.id === theUserId) !== undefined)
+        // search in each channel
+        .forEach(c => c.messages.forEach(m => m.text.indexOf(args.searchString) !== -1 && messagesFound.push(m)));
+
+      // sort messages (newest first)
+      messagesFound.sort((m1, m2) => {
+        const r = new Date(m2.date).getTime() - new Date(m1.date).getTime();
+        if (r === 0) {
+          return m2.id.localeCompare(m1.id);
+        }
+        return r;
+      });
+
+      let firstIx = 0;
+      if (args.after) {
+        firstIx = messagesFound.findIndex(m => m.id === args.after);
+        if (firstIx !== -1) {
+          firstIx++;
+        }
+      }
+
+      if (firstIx < 0) {
+        return {
+          edges: [],
+          pageInfo: {
+            hasPreviousPage: false,
+            hasNextPage: false
+          }
+        };
+      }
+
+      const edges: SearchMessagesResultEdge[] = messagesFound
+        // limit number of results according to parameters
+        .slice(firstIx, firstIx + args.first)
+        // transform to Edges
+        .map(message => ({
+          node: message,
+          cursor: message.id
+        }));
+
+      return {
+        edges,
+        pageInfo: {
+          hasPreviousPage: firstIx > 0,
+          hasNextPage: firstIx + args.first < messagesFound.length
+        }
+      };
+    }
   },
   Mutation: {
     postMessage: (_: any, args: { channelId: string; authorId: string; message: string }) => {
@@ -116,16 +228,19 @@ const resolvers = {
     messageAdded: {
       resolve: (payload: any) => {
         const value = payload.messageAdded;
-        console.log("PAYLOAD", payload);
-        console.log("VALUE", value);
+        // console.log("PAYLOAD", payload);
+        // console.log("VALUE", value);
         return value;
       },
-      subscribe: withFilter(
-        () => pubsub.asyncIterator("messageAdded"),
-        ({ channel }: { channel: any }, { channelIds }: { channelIds: string[] }) => {
-          return channelIds.includes(channel.id);
-        }
-      )
+      subscribe:
+        console.log("subscribe") ||
+        withFilter(
+          () => pubsub.asyncIterator("messageAdded"),
+          ({ channel }: { channel: any }, { channelIds }: { channelIds: string[] }) => {
+            console.log("subscribe", channelIds);
+            return channelIds.includes(channel.id);
+          }
+        )
     }
   },
   User: {
