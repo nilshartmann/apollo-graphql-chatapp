@@ -2,7 +2,7 @@ const { makeExecutableSchema } = require("graphql-tools");
 
 import { PubSub, withFilter } from "graphql-subscriptions";
 import users from "./mocks/users";
-import channels from "./mocks/channels";
+import channels from "./mocks/faker";
 
 // The GraphQL schema in string form
 const typeDefs = `
@@ -11,6 +11,8 @@ const typeDefs = `
 
     """The readable name"""
     name: String!
+
+    channels: [Channel!]!
   }
 
   type Channel {
@@ -125,6 +127,9 @@ const resolvers = {
         }
       )
     }
+  },
+  User: {
+    channels: (obj: User) => channels.filter(c => c.members.find(m => m.id === obj.id) !== undefined)
   },
   Channel: {
     latestMessage: (obj: Channel) =>
