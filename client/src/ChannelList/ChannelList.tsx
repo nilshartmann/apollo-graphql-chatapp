@@ -3,17 +3,14 @@ import * as React from "react";
 import * as styles from "./ChannelList.scss";
 import * as classNames from "classnames";
 
-import { Row, Col } from "../layout";
-
 import { gql, gql as clientGql } from "apollo-boost";
 import { Query, Subscription } from "react-apollo";
-import { timeOnly } from "../utils";
 import {
   ChannelListQueryResult,
   ChannelListQueryVariables,
   ChannelListQueryResult_channels
 } from "./__generated__/ChannelListQuery";
-import { RouteComponentProps, Link } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 
 import { CurrentUser } from "../components";
 import { NewMessageSubscriptionResult, NewMessageSubscriptionResult_messageAdded } from "./__generated__/NewMessageSubscription";
@@ -21,6 +18,8 @@ import { DraftMessage } from "../types";
 import { ChannelQueryResult, ChannelQueryResult_channel } from "../Channel/__generated__/ChannelQuery";
 
 import { ChannelFragmentResult } from "./__generated__/ChannelFragment";
+
+import ChannelCard from "./ChannelCard";
 
 const NEW_MESSAGE_SUBSCRIPTION = gql`
   subscription NewMessageSubscription($channelIds: [String!]!) {
@@ -186,56 +185,4 @@ class ChannelListWithData extends React.Component<ChannelListWithDataProps> {
     // https://www.apollographql.com/docs/react/advanced/subscriptions.html#subscribe-to-more
     this.props.subscribeToNewMessages();
   }
-}
-
-interface ChannelCardProps {
-  channelId: string;
-  title: string;
-  author: string;
-  lastMessage: string;
-  date: string;
-  active?: boolean;
-  unreadMessageCount?: number;
-  draftMessage?: string | null;
-}
-function ChannelCard({
-  channelId,
-  title,
-  active = false,
-  author,
-  lastMessage,
-  date,
-  unreadMessageCount,
-  draftMessage
-}: ChannelCardProps) {
-  const classnames = classNames(styles.ChannelCardContent, { [styles.active]: active });
-
-  const text = draftMessage ? draftMessage : `${author}: ${lastMessage}`;
-  const dateOrDraft = draftMessage ? "(Draft)" : timeOnly(date);
-
-  return (
-    <Link to={`/channel/${channelId}`}>
-      <Row className={styles.ChannelCard}>
-        <Col className={classnames}>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <Row>
-              <Col>
-                <h1>{title}</h1>
-              </Col>
-              {unreadMessageCount && (
-                <Col xs="auto">
-                  <div className={styles.UnreadMessageCounter}>{unreadMessageCount}</div>
-                </Col>
-              )}
-            </Row>
-
-            <div className={styles.latestMessageAbstract}>
-              <div className={styles.latestMessageAbstractMessage}>{text}</div>
-              <div className={styles.latestMessageAbstractDate}>{dateOrDraft}</div>
-            </div>
-          </div>
-        </Col>
-      </Row>
-    </Link>
-  );
 }
