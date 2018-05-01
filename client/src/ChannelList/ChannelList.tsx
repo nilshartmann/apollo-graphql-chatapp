@@ -96,60 +96,53 @@ export default function ChannelList({ match }: ChannelListProps) {
               return <h1>Please wait</h1>;
             }
 
-            subscribeToMore({
-              document: NEW_MESSAGE_SUBSCRIPTION,
-              variables: {
-                channelIds: data.channels.map(channel => channel.id)
-              },
-              updateQuery: (prev, { subscriptionData }) => {
-                // QUESTION: why is updatequery untyped ??? https://github.com/apollographql/apollo-client/issues/3391
-                const subscriptionResult = subscriptionData.data as NewMessageSubscriptionResult;
-                const prevQueryChannelResult: ChannelListQueryResult = prev as ChannelListQueryResult;
+            function subscribeToNewMessages() {
+              subscribeToMore({
+                document: NEW_MESSAGE_SUBSCRIPTION,
+                variables: {
+                  channelIds: data.channels.map(channel => channel.id)
+                },
+                updateQuery: (prev, { subscriptionData }) => {
+                  // QUESTION: why is updatequery untyped ??? https://github.com/apollographql/apollo-client/issues/3391
+                  const subscriptionResult = subscriptionData.data as NewMessageSubscriptionResult;
+                  const prevQueryChannelResult: ChannelListQueryResult = prev as ChannelListQueryResult;
 
-                console.log("UPDATE QUERY prev:", prev);
-                console.log("UPDATE QUERY data", subscriptionData.data);
+                  console.log("UPDATE QUERY prev:", prev);
+                  console.log("UPDATE QUERY data", subscriptionData.data);
 
-                if (!subscriptionResult) return prevQueryChannelResult;
+                  if (!subscriptionResult) return prevQueryChannelResult;
 
-                const newChannels = prevQueryChannelResult.channels.map(
-                  ec =>
-                    ec.id === subscriptionResult.messageAdded.channel.id
-                      ? {
-                          ...ec,
-                          latestMessage: subscriptionResult.messageAdded
-                        }
-                      : ec
-                );
+                  const newChannels = prevQueryChannelResult.channels.map(
+                    ec =>
+                      ec.id === subscriptionResult.messageAdded.channel.id
+                        ? {
+                            ...ec,
+                            latestMessage: subscriptionResult.messageAdded
+                          }
+                        : ec
+                  );
 
-                return {
-                  ...prevQueryChannelResult,
-                  channels: newChannels
-                };
-              }
-            });
+                  return {
+                    ...prevQueryChannelResult,
+                    channels: newChannels
+                  };
+                }
+              });
+            }
 
             return (
               <Query query={DRAFT_MESSAGES_QUERY}>
                 {({ data: draftMessageQueryResult }) => {
                   const draftMessages: DraftMessage[] = draftMessageQueryResult.draftMessages;
 
-                  const getDraftMessageForChannel = (channelId: string) => {
-                    const r = draftMessages.find(dm => dm.id === channelId);
-                    return r ? r.text : null;
-                  };
-
-                  return data.channels.map(channel => (
-                    <ChannelCard
-                      key={channel.id}
-                      channelId={channel.id}
-                      title={channel.title}
-                      author={channel.latestMessage.author.name}
-                      lastMessage={channel.latestMessage.text}
-                      draftMessage={getDraftMessageForChannel(channel.id)}
-                      date={channel.latestMessage.date}
-                      active={channel.id === match.params.currentChannelId}
+                  return (
+                    <ChannelListWithData
+                      subscribeToNewMessages={subscribeToNewMessages}
+                      currentChannelId={match.params.currentChannelId}
+                      draftMessages={draftMessages}
+                      channels={data.channels}
                     />
-                  ));
+                  );
                 }}
               </Query>
             );
@@ -158,6 +151,41 @@ export default function ChannelList({ match }: ChannelListProps) {
       )}
     </CurrentUser>
   );
+}
+
+interface ChannelListWithDataProps {
+  subscribeToNewMessages(): void;
+  currentChannelId: string;
+  draftMessages: DraftMessage[];
+  channels: ChannelListQueryResult_channels[];
+}
+
+class ChannelListWithData extends React.Component<ChannelListWithDataProps> {
+  render() {
+    const { draftMessages, channels, currentChannelId } = this.props;
+    const getDraftMessageForChannel = (channelId: string) => {
+      const r = draftMessages.find(dm => dm.id === channelId);
+      return r ? r.text : null;
+    };
+
+    return channels.map(channel => (
+      <ChannelCard
+        key={channel.id}
+        channelId={channel.id}
+        title={channel.title}
+        author={channel.latestMessage.author.name}
+        lastMessage={channel.latestMessage.text}
+        draftMessage={getDraftMessageForChannel(channel.id)}
+        date={channel.latestMessage.date}
+        active={channel.id === currentChannelId}
+      />
+    ));
+  }
+
+  componentDidMount() {
+    // https://www.apollographql.com/docs/react/advanced/subscriptions.html#subscribe-to-more
+    this.props.subscribeToNewMessages();
+  }
 }
 
 interface ChannelCardProps {
