@@ -22,21 +22,6 @@
     }
   }
 
-  .Message {
-    @include card();
-    margin-left: 0.5rem;
-    margin-right: 0px;
-
-    .Text {
-      font-size: 1.25rem;
-    }
-
-    .Date {
-      margin-top: 0.5rem;
-      font-weight: lighter;
-    }
-  }
-
   .Editor {
     @include card();
     margin-left: 0.5rem;
@@ -62,5 +47,20 @@
         color: $color-text;
       }
     }
+  }
+}
+
+.Message {
+  @include card();
+  margin-left: 0.5rem;
+  margin-right: 0px;
+
+  .Text {
+    font-size: 1.25rem;
+  }
+
+  .Date {
+    margin-top: 0.5rem;
+    font-weight: lighter;
   }
 }

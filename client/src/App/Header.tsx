@@ -4,13 +4,19 @@ import * as styles from "./App.scss";
 import { Grid, Row, Col } from "../layout/index";
 
 import { CurrentUser } from "../components";
+import { Link } from "react-router-dom";
 import Avatar from "../components/Avatar";
 
 export default function Header() {
   return (
     <Row className={styles.Header} align="center">
       <Col>
-        <h1>GraphQL Chat App</h1>
+        <Link to="/">
+          <h1>GraphQL Chat App</h1>
+        </Link>
+      </Col>
+      <Col xs={4}>
+        <input style={{ width: "100%" }} type="text" placeholder="Search" />
       </Col>
       <Col xs="auto">
         <CurrentUser>

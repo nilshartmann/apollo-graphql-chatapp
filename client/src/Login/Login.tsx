@@ -17,6 +17,13 @@ export default class Login extends React.Component<LoginProps, LoginState> {
     password: ""
   };
 
+  onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.charCode === 13) {
+      e.preventDefault();
+      this.doLogin();
+    }
+  };
+
   onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ [e.currentTarget.name as any]: e.currentTarget.value });
   };
@@ -60,10 +67,24 @@ export default class Login extends React.Component<LoginProps, LoginState> {
         <h1>Login</h1>
         <form>
           <label htmlFor="username">Username</label>
-          <input id="username" type="text" name="username" value={username} onChange={this.onInputChange} />
+          <input
+            id="username"
+            type="text"
+            name="username"
+            value={username}
+            onChange={this.onInputChange}
+            onKeyPress={this.onKeyPress}
+          />
 
           <label htmlFor="password">Password</label>
-          <input id="password" type="text" name="password" value={password} onChange={this.onInputChange} />
+          <input
+            id="password"
+            type="text"
+            name="password"
+            value={password}
+            onChange={this.onInputChange}
+            onKeyPress={this.onKeyPress}
+          />
 
           <Button type="button" onClick={this.doLogin}>
             Login

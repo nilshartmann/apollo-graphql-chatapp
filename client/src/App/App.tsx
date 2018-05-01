@@ -10,6 +10,8 @@ import Footer from "./Footer";
 
 import ChannelList from "../ChannelList";
 import Channel from "../Channel";
+import Search from "../Search";
+
 import { clearLocalAuth, hasLocalUserId } from "../authService";
 import Login from "../Login/Login";
 
@@ -57,6 +59,15 @@ export default function App() {
             )}
           />
           <Route exact path="/" render={() => <Redirect to="/channel" />} />
+          <ProtectedRoute
+            exact
+            path="/search"
+            render={routerProps => (
+              <Col>
+                <Search {...routerProps} />
+              </Col>
+            )}
+          />
           <Route exact path="/login" component={Login} />
           <Route
             exact
