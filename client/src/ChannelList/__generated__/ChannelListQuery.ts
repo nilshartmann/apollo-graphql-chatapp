@@ -26,7 +26,7 @@ export interface ChannelListQueryResult_channels {
 }
 
 export interface ChannelListQueryResult {
-  channels: ChannelListQueryResult_channels[];
+  channels: ChannelListQueryResult_channels[];  // All Channels that contain the specified Member
 }
 
 export interface ChannelListQueryVariables {

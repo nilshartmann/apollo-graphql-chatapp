@@ -13,7 +13,7 @@ export interface GetUserByIdQueryResult_user {
 }
 
 export interface GetUserByIdQueryResult {
-  user: GetUserByIdQueryResult_user | null;
+  user: GetUserByIdQueryResult_user | null;  // The User with the specified id
 }
 
 export interface GetUserByIdQueryVariables {

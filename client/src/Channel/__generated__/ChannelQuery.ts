@@ -32,7 +32,7 @@ export interface ChannelQueryResult_channel {
 }
 
 export interface ChannelQueryResult {
-  channel: ChannelQueryResult_channel | null;
+  channel: ChannelQueryResult_channel | null;  // The Channel with the given id
 }
 
 export interface ChannelQueryVariables {
