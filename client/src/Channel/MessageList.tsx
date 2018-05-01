@@ -7,6 +7,7 @@ import { Row, Col } from "../layout";
 import Avatar from "../components/Avatar";
 
 interface MessagesListProps {
+  subscribeToNewMessages(): void;
   channel: ChannelQueryResult_channel;
 }
 
@@ -35,6 +36,7 @@ export default class MessageList extends React.Component<MessagesListProps> {
   }
 
   componentDidMount() {
+    this.props.subscribeToNewMessages();
     this.scrollToBottom();
   }
 

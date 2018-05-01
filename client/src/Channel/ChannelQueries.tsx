@@ -29,6 +29,21 @@ export const CHANNEL_QUERY = gql`
 
 export class ChannelQuery extends Query<ChannelQueryResult, ChannelQueryVariables> {}
 
+// fields must be same as in CHANNEL_QUERY. TODO: could use a Fragment here...
+export const ON_NEW_MESSAGE_SUBSCRIPTION = gql`
+  subscription OnNewMessageSubscription($channelId: String!) {
+    messageAdded(channelIds: [$channelId]) {
+      id
+      text
+      date
+      author {
+        id
+        name
+      }
+    }
+  }
+`;
+
 export const POST_NEW_MESSAGE_MUTATION = gql`
   mutation PostNewMessageMutation($channelId: String!, $authorId: String!, $message: String!) {
     postMessage(channelId: $channelId, authorId: $authorId, message: $message) {

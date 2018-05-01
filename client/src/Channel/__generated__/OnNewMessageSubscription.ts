@@ -4,16 +4,27 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL fragment: ChannelFragment
+// GraphQL subscription operation: OnNewMessageSubscription
 // ====================================================
 
-export interface ChannelFragmentResult_messages {
+export interface OnNewMessageSubscriptionResult_messageAdded_author {
   id: string;
-  text: string;
+  name: string;  // The readable name
 }
 
-export interface ChannelFragmentResult {
-  messages: ChannelFragmentResult_messages[];
+export interface OnNewMessageSubscriptionResult_messageAdded {
+  id: string;
+  text: string;
+  date: string;
+  author: OnNewMessageSubscriptionResult_messageAdded_author;
+}
+
+export interface OnNewMessageSubscriptionResult {
+  messageAdded: OnNewMessageSubscriptionResult_messageAdded;
+}
+
+export interface OnNewMessageSubscriptionVariables {
+  channelId: string;
 }
 
 //==============================================================

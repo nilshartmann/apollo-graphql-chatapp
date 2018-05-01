@@ -14,10 +14,8 @@ import { RouteComponentProps } from "react-router-dom";
 
 import { CurrentUser } from "../components";
 import { NewMessageSubscriptionResult, NewMessageSubscriptionResult_messageAdded } from "./__generated__/NewMessageSubscription";
-import { DraftMessage } from "../types";
+import { DraftMessage, SubscribeToMoreFn } from "../types";
 import { ChannelQueryResult, ChannelQueryResult_channel } from "../Channel/__generated__/ChannelQuery";
-
-import { ChannelFragmentResult } from "./__generated__/ChannelFragment";
 
 import ChannelCard from "./ChannelCard";
 
@@ -66,8 +64,6 @@ const CHANNEL_LIST_QUERY = gql`
     }
   }
 `;
-
-type SubscribeToMoreFn = (options: SubscribeToMoreOptions) => () => void;
 
 function subscribeToNewMessages(subscribeToMore: SubscribeToMoreFn, channelIds: string[]) {
   subscribeToMore({
