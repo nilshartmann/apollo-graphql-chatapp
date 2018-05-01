@@ -4,16 +4,16 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL fragment: myChannel
+// GraphQL fragment: ChannelFragment
 // ====================================================
 
-export interface myChannelResult_messages {
+export interface ChannelFragmentResult_messages {
   id: string;
   text: string;
 }
 
-export interface myChannelResult {
-  messages: myChannelResult_messages[];
+export interface ChannelFragmentResult {
+  messages: ChannelFragmentResult_messages[];
 }
 
 //==============================================================

@@ -1,0 +1,54 @@
+ // const CHANNEL_FRAGMENT = gql`
+                //   fragment ChannelFragment on Channel {
+                //     messages {
+                //       id
+                //       text
+                //     }
+                //   }
+                // `;
+
+                // let channelFromCache: ChannelFragmentResult | null;
+
+                // // https://github.com/apollographql/apollo-client/issues/2007
+                // // https://github.com/apollographql/apollo-client/issues/2024
+                // try {
+                //   channelFromCache = client.readFragment({
+                //     id: `Channel:${subscriptionResult.messageAdded.channel.id}`,
+                //     fragment: CHANNEL_FRAGMENT
+                //   });
+                // } catch (e) {
+                //   console.error("FAILED TO READ FRAGMENT", e.message);
+                //   return prev;
+                // }
+
+                // console.log("f: ===>");
+                // console.dir(channelFromCache);
+
+                // if (!channelFromCache) {
+                //   return prev;
+                // }
+
+                // const newChannelList = {
+                //   ...channelFromCache,
+                //   messages: channelFromCache.messages.concat(subscriptionResult.messageAdded)
+                // };
+
+                // console.log("newChannelList: ===>");
+                // console.dir(newChannelList);
+
+                // if (!channelFromCache.messages.find(m => m.id === subscriptionResult.messageAdded.id)) {
+                //   console.log(
+                //     `Add Message with id ${subscriptionResult.messageAdded.id} (${subscriptionResult.messageAdded.text})...`
+                //   );
+                //   client.writeFragment({
+                //     id: `Channel:${subscriptionResult.messageAdded.channel.id}`,
+                //     fragment: CHANNEL_FRAGMENT,
+                //     data: newChannelList
+                //   });
+                // } else {
+                //   console.log(
+                //     ` Message with id ${subscriptionResult.messageAdded.id} (${
+                //       subscriptionResult.messageAdded.text
+                //     }) already in cache...`
+                //   );
+                // }

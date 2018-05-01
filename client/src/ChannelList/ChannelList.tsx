@@ -8,13 +8,19 @@ import { Row, Col } from "../layout";
 import { gql, gql as clientGql } from "apollo-boost";
 import { Query, Subscription } from "react-apollo";
 import { timeOnly } from "../utils";
-import { ChannelListQueryResult, ChannelListQueryVariables } from "./__generated__/ChannelListQuery";
+import {
+  ChannelListQueryResult,
+  ChannelListQueryVariables,
+  ChannelListQueryResult_channels
+} from "./__generated__/ChannelListQuery";
 import { RouteComponentProps, Link } from "react-router-dom";
 
 import { CurrentUser } from "../components";
 import { NewMessageSubscriptionResult, NewMessageSubscriptionResult_messageAdded } from "./__generated__/NewMessageSubscription";
 import { DraftMessage } from "../types";
 import { ChannelQueryResult, ChannelQueryResult_channel } from "../Channel/__generated__/ChannelQuery";
+
+import { ChannelFragmentResult } from "./__generated__/ChannelFragment";
 
 const NEW_MESSAGE_SUBSCRIPTION = gql`
   subscription NewMessageSubscription($channelIds: [String!]!) {
@@ -63,7 +69,9 @@ const CHANNEL_LIST_QUERY = gql`
 `;
 
 class ChannelListQuery extends Query<ChannelListQueryResult, ChannelListQueryVariables> {}
+
 interface ChannelListProps extends RouteComponentProps<{ currentChannelId: string }> {}
+
 export default function ChannelList({ match }: ChannelListProps) {
   return (
     <CurrentUser>
@@ -96,66 +104,28 @@ export default function ChannelList({ match }: ChannelListProps) {
               updateQuery: (prev, { subscriptionData }) => {
                 // QUESTION: why is updatequery untyped ???
                 console.log("UPDATE QUERY prev:", prev);
-                console.log("UPDATE QUERY cur", subscriptionData);
+                console.log("UPDATE QUERY data", subscriptionData.data);
 
-                const data = subscriptionData.data;
+                const subscriptionResult = subscriptionData.data as NewMessageSubscriptionResult;
+                if (!subscriptionResult) return prev;
 
-                if (!data) return prev;
-
-                const bla: any = prev;
-                const existingChannels: ChannelQueryResult_channel[] = bla.channels;
-
-                const updateChannel = (
-                  c: ChannelQueryResult_channel,
-                  newLatestMessage: NewMessageSubscriptionResult_messageAdded
-                ) => {
-                  const newMessage = { ...data.messageAdded, text: data.messageAdded.text + "ZZ" };
-                  const updatedChannel = Object.assign({}, c, { latestMessage: data.messageAdded });
-                  return updatedChannel;
-                };
+                const prevQueryChannelResult: ChannelListQueryResult = prev as ChannelListQueryResult;
+                const existingChannels = prevQueryChannelResult.channels;
 
                 const newChannels = existingChannels.map(
-                  ec => (ec.id === data.messageAdded.channel.id ? updateChannel(ec, data.messageAdded) : ec)
+                  ec =>
+                    ec.id === subscriptionResult.messageAdded.channel.id
+                      ? {
+                          ...ec,
+                          latestMessage: subscriptionResult.messageAdded
+                        }
+                      : ec
                 );
 
-                const myChannel = gql`
-                  fragment myChannel on Channel {
-                    messages {
-                      id
-                      text
-                    }
-                  }
-                `;
-
-                const f: any = client.readFragment({
-                  id: `Channel:${data.messageAdded.channel.id}`,
-                  fragment: myChannel
-                });
-
-                console.log("f: ===>");
-                console.dir(f);
-
-                const newChannelList = { ...f, messages: f.messages.concat(data.messageAdded) };
-
-                console.log("newChannelList: ===>");
-                console.dir(newChannelList);
-
-                if (!f.messages.find((m: any) => m.id === data.messageAdded.id)) {
-                  console.log(`Add Message with id ${data.messageAdded.id} (${data.messageAdded.text})...`);
-                  client.writeFragment({
-                    id: `Channel:${data.messageAdded.channel.id}`,
-                    fragment: myChannel,
-                    data: newChannelList
-                  });
-                } else {
-                  console.log(` Message with id ${data.messageAdded.id} (${data.messageAdded.text}) already in cache...`);
-                }
-
-                // return prev;
-
-                return Object.assign({}, prev, {
+                return {
+                  ...prev,
                   channels: newChannels
-                });
+                };
               }
             });
 
