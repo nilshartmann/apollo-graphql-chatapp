@@ -3,7 +3,7 @@ import * as React from "react";
 import * as styles from "./ChannelList.scss";
 import * as classNames from "classnames";
 
-import { gql, gql as clientGql } from "apollo-boost";
+import { gql, gql as clientGql, SubscribeToMoreOptions } from "apollo-boost";
 import { Query, Subscription } from "react-apollo";
 import {
   ChannelListQueryResult,
@@ -67,6 +67,42 @@ const CHANNEL_LIST_QUERY = gql`
   }
 `;
 
+type SubscribeToMoreFn = (options: SubscribeToMoreOptions) => () => void;
+
+function subscribeToNewMessages(subscribeToMore: SubscribeToMoreFn, channelIds: string[]) {
+  subscribeToMore({
+    document: NEW_MESSAGE_SUBSCRIPTION,
+    variables: {
+      channelIds
+    },
+    updateQuery: (prev, { subscriptionData }) => {
+      // QUESTION: why is updatequery untyped ??? https://github.com/apollographql/apollo-client/issues/3391
+      const subscriptionResult = subscriptionData.data as NewMessageSubscriptionResult;
+      const prevQueryChannelResult: ChannelListQueryResult = prev as ChannelListQueryResult;
+
+      console.log("UPDATE QUERY prev:", prev);
+      console.log("UPDATE QUERY data", subscriptionData.data);
+
+      if (!subscriptionResult) return prevQueryChannelResult;
+
+      const newChannels = prevQueryChannelResult.channels.map(
+        ec =>
+          ec.id === subscriptionResult.messageAdded.channel.id
+            ? {
+                ...ec,
+                latestMessage: subscriptionResult.messageAdded
+              }
+            : ec
+      );
+
+      return {
+        ...prevQueryChannelResult,
+        channels: newChannels
+      };
+    }
+  });
+}
+
 class ChannelListQuery extends Query<ChannelListQueryResult, ChannelListQueryVariables> {}
 
 interface ChannelListProps extends RouteComponentProps<{ currentChannelId: string }> {}
@@ -95,48 +131,15 @@ export default function ChannelList({ match }: ChannelListProps) {
               return <h1>Please wait</h1>;
             }
 
-            function subscribeToNewMessages() {
-              subscribeToMore({
-                document: NEW_MESSAGE_SUBSCRIPTION,
-                variables: {
-                  channelIds: data.channels.map(channel => channel.id)
-                },
-                updateQuery: (prev, { subscriptionData }) => {
-                  // QUESTION: why is updatequery untyped ??? https://github.com/apollographql/apollo-client/issues/3391
-                  const subscriptionResult = subscriptionData.data as NewMessageSubscriptionResult;
-                  const prevQueryChannelResult: ChannelListQueryResult = prev as ChannelListQueryResult;
-
-                  console.log("UPDATE QUERY prev:", prev);
-                  console.log("UPDATE QUERY data", subscriptionData.data);
-
-                  if (!subscriptionResult) return prevQueryChannelResult;
-
-                  const newChannels = prevQueryChannelResult.channels.map(
-                    ec =>
-                      ec.id === subscriptionResult.messageAdded.channel.id
-                        ? {
-                            ...ec,
-                            latestMessage: subscriptionResult.messageAdded
-                          }
-                        : ec
-                  );
-
-                  return {
-                    ...prevQueryChannelResult,
-                    channels: newChannels
-                  };
-                }
-              });
-            }
-
             return (
               <Query query={DRAFT_MESSAGES_QUERY}>
                 {({ data: draftMessageQueryResult }) => {
                   const draftMessages: DraftMessage[] = draftMessageQueryResult.draftMessages;
+                  const subscribedChannelIds = data.channels.map(channel => channel.id);
 
                   return (
                     <ChannelListWithData
-                      subscribeToNewMessages={subscribeToNewMessages}
+                      subscribeToNewMessages={() => subscribeToNewMessages(subscribeToMore, subscribedChannelIds)}
                       currentChannelId={match.params.currentChannelId}
                       draftMessages={draftMessages}
                       channels={data.channels}
