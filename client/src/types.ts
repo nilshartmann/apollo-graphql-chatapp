@@ -6,3 +6,4 @@ export interface DraftMessage {
 }
 
 export type SubscribeToMoreFn = (options: SubscribeToMoreOptions) => () => void;
+export type SubscribeToMoreFnResult = () => void;

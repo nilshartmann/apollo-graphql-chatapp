@@ -30,7 +30,6 @@ export default function ChannelCard({
   const classnames = classNames(styles.ChannelCardContent, { [styles.active]: active });
 
   const text = draftMessage ? draftMessage : `${author}: ${lastMessage}`;
-  const dateOrDraft = draftMessage ? "(Draft)" : timeOnly(date);
 
   return (
     <Link to={`/channel/${channelId}`}>
@@ -50,7 +49,8 @@ export default function ChannelCard({
 
             <div className={styles.latestMessageAbstract}>
               <div className={styles.latestMessageAbstractMessage}>{text}</div>
-              <div className={styles.latestMessageAbstractDate}>{dateOrDraft}</div>
+              {!!draftMessage && <div className={styles.latestMessageAbstractDraft}>(Draft)</div>}
+              {!!draftMessage || <div className={styles.latestMessageAbstractDate}>{timeOnly(date)}</div>}
             </div>
           </div>
         </Col>

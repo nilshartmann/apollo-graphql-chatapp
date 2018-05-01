@@ -14,6 +14,10 @@
 
     &:not(.active) {
       @include clickable();
+
+      .latestMessageAbstractDraft {
+        color: $color-one;
+      }
     }
 
     .latestMessageAbstract {
@@ -32,7 +36,8 @@
         text-overflow: ellipsis;
         // display: flex;
       }
-      .latestMessageAbstractDate {
+      .latestMessageAbstractDate,
+      .latestMessageAbstractDraft {
         flex-shrink: 0;
         text-align: right;
         margin-left: 1rem;

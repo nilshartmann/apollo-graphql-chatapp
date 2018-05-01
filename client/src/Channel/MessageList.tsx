@@ -5,13 +5,15 @@ import { longDate } from "../utils";
 import ChannelTitle from "./ChannelTitle";
 import { Row, Col } from "../layout";
 import Avatar from "../components/Avatar";
+import { SubscribeToMoreFnResult } from "../types";
 
 interface MessagesListProps {
-  subscribeToNewMessages(): void;
+  subscribeToNewMessages(): SubscribeToMoreFnResult;
   channel: ChannelQueryResult_channel;
 }
 
 export default class MessageList extends React.Component<MessagesListProps> {
+  unsubscribeFromNewMessages: SubscribeToMoreFnResult | null = null;
   messageListRef: HTMLDivElement | null = null;
   scrollAtBottom: boolean = true;
 
@@ -36,8 +38,12 @@ export default class MessageList extends React.Component<MessagesListProps> {
   }
 
   componentDidMount() {
-    this.props.subscribeToNewMessages();
+    this.unsubscribeFromNewMessages = this.props.subscribeToNewMessages();
     this.scrollToBottom();
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeFromNewMessages && this.unsubscribeFromNewMessages();
   }
 
   componentDidUpdate() {

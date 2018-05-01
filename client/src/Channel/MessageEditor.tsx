@@ -1,5 +1,8 @@
 import * as React from "react";
 
+import * as styles from "./Channel.scss";
+
+import { Col, Row } from "../layout";
 import Button from "../components/Button";
 
 interface MessageEditorProps {
@@ -41,18 +44,20 @@ export default class MessageEditor extends React.Component<MessageEditorProps> {
     const sendButtonDisabled = !this.isValidMessage();
 
     return (
-      <React.Fragment>
-        <input
-          placeholder="Enter your message"
-          value={message}
-          onKeyPress={this.onMessageKeyPress}
-          onChange={this.onMessageChange}
-        />
+      <Row className={styles.Editor}>
+        <Col className={styles.Form}>
+          <input
+            placeholder="Enter your message"
+            value={message}
+            onKeyPress={this.onMessageKeyPress}
+            onChange={this.onMessageChange}
+          />
 
-        <Button disabled={sendButtonDisabled} onClick={this.onSend}>
-          Send
-        </Button>
-      </React.Fragment>
+          <Button disabled={sendButtonDisabled} onClick={this.onSend}>
+            Send
+          </Button>
+        </Col>
+      </Row>
     );
   }
 }

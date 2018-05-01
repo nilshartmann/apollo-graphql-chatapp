@@ -3,8 +3,6 @@ import { RouteComponentProps } from "react-router-dom";
 
 import * as styles from "./Channel.scss";
 
-import { Col, Row } from "../layout";
-
 import { ChannelQueryVariables } from "./__generated__/ChannelQuery";
 import {
   PostNewMessageMutationResult,
@@ -12,7 +10,7 @@ import {
   PostNewMessageMutationVariables
 } from "./__generated__/PostNewMessageMutation";
 import MessageEditor from "./MessageEditor";
-import { DraftMessage, SubscribeToMoreFn } from "../types";
+import { DraftMessage, SubscribeToMoreFn, SubscribeToMoreFnResult } from "../types";
 
 import { ApolloClient } from "apollo-boost";
 import MessageList from "./MessageList";
@@ -39,8 +37,8 @@ interface ChannelProps extends RouteComponentProps<{ currentChannelId: string }>
 // }
 
 export default class Channel extends React.Component<ChannelProps> {
-  subscribeToNewMessages(subscribeToMore: SubscribeToMoreFn, currentChannelId: string) {
-    subscribeToMore({
+  subscribeToNewMessages(subscribeToMore: SubscribeToMoreFn, currentChannelId: string): SubscribeToMoreFnResult {
+    return subscribeToMore({
       document: ON_NEW_MESSAGE_SUBSCRIPTION,
       variables: {
         channelId: currentChannelId
@@ -56,16 +54,32 @@ export default class Channel extends React.Component<ChannelProps> {
         if (!subscriptionResult) return prevQueryChannelResult;
         if (!prevQueryChannelResult.channel) return prevQueryChannelResult;
 
-        const newMessages = prevQueryChannelResult.channel.messages.concat(subscriptionResult.messageAdded);
+        // we may already have message "fragment" from another query
+        // in that case we have to replace the message, otherwise add the message
 
-        const newChannel = {
-          ...prevQueryChannelResult.channel,
-          messages: newMessages
-        };
+        let messageFound = false;
+        const newMessages = prevQueryChannelResult.channel.messages.map(message => {
+          if (message.id === subscriptionResult.messageAdded.id) {
+            messageFound = true;
+            return {
+              ...message,
+              ...subscriptionResult.messageAdded
+            };
+          }
+
+          return message;
+        });
+
+        if (!messageFound) {
+          newMessages.push(subscriptionResult.messageAdded);
+        }
 
         const newResult: ChannelQueryResult = {
           ...prevQueryChannelResult,
-          channel: newChannel
+          channel: {
+            ...prevQueryChannelResult.channel,
+            messages: newMessages
+          }
         };
 
         console.log("CHANNEL UPDATE QUERY newResult", newResult);
@@ -178,25 +192,19 @@ export default class Channel extends React.Component<ChannelProps> {
                   subscribeToNewMessages={() => this.subscribeToNewMessages(subscribeToMore, currentChannelId)}
                   channel={channel}
                 />
-                <Row className={styles.Editor}>
-                  <Col className={styles.Form}>
-                    <DraftMessageForChannelQuery
-                      query={DRAFT_MESSAGE_FOR_CHANNEL_QUERY}
-                      variables={{ channelId: currentChannelId }}
-                    >
-                      {({ data: result }) => {
-                        const message = (result && result.draftMessageForChannel && result.draftMessageForChannel.text) || "";
-                        return (
-                          <MessageEditor
-                            message={message}
-                            onMessageChange={currentValue => this.publishDraftMessage(client, currentChannelId, currentValue)}
-                            onNewMessage={newValue => this.postNewMessage(client, currentChannelId, newValue)}
-                          />
-                        );
-                      }}
-                    </DraftMessageForChannelQuery>
-                  </Col>
-                </Row>
+
+                <DraftMessageForChannelQuery query={DRAFT_MESSAGE_FOR_CHANNEL_QUERY} variables={{ channelId: currentChannelId }}>
+                  {({ data: result }) => {
+                    const message = (result && result.draftMessageForChannel && result.draftMessageForChannel.text) || "";
+                    return (
+                      <MessageEditor
+                        message={message}
+                        onMessageChange={currentValue => this.publishDraftMessage(client, currentChannelId, currentValue)}
+                        onNewMessage={newValue => this.postNewMessage(client, currentChannelId, newValue)}
+                      />
+                    );
+                  }}
+                </DraftMessageForChannelQuery>
               </div>
             );
           }}
