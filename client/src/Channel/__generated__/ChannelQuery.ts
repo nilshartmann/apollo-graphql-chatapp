@@ -7,32 +7,32 @@
 // GraphQL query operation: ChannelQuery
 // ====================================================
 
-export interface ChannelQuery_channel_members {
+export interface ChannelQueryResult_channel_members {
   id: string;
   name: string;  // The readable name
 }
 
-export interface ChannelQuery_channel_messages_author {
+export interface ChannelQueryResult_channel_messages_author {
   id: string;
   name: string;  // The readable name
 }
 
-export interface ChannelQuery_channel_messages {
+export interface ChannelQueryResult_channel_messages {
   id: string;
   text: string;
   date: string;
-  author: ChannelQuery_channel_messages_author;
+  author: ChannelQueryResult_channel_messages_author;
 }
 
-export interface ChannelQuery_channel {
+export interface ChannelQueryResult_channel {
   id: string;     // Unique identifier
   title: string;  // Human-readable title of this Channel
-  members: ChannelQuery_channel_members[];
-  messages: ChannelQuery_channel_messages[];
+  members: ChannelQueryResult_channel_members[];
+  messages: ChannelQueryResult_channel_messages[];
 }
 
-export interface ChannelQuery {
-  channel: ChannelQuery_channel | null;
+export interface ChannelQueryResult {
+  channel: ChannelQueryResult_channel | null;
 }
 
 export interface ChannelQueryVariables {

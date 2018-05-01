@@ -1,9 +1,9 @@
 import { gql as clientGql, gql } from "apollo-boost";
 import { Query } from "react-apollo";
-import { ChannelQuery as ChannelQueryResult, ChannelQueryVariables } from "./__generated__/ChannelQuery";
+import { ChannelQueryResult, ChannelQueryVariables } from "./__generated__/ChannelQuery";
 import { DraftMessage } from "../types";
 
-export type ChannelQueryResult = ChannelQueryResult;
+export { ChannelQueryResult } from "./__generated__/ChannelQuery";
 
 export const CHANNEL_QUERY = gql`
   query ChannelQuery($channelId: String!) {
@@ -57,18 +57,18 @@ export const UPDATE_DRAFT_CLIENT_MUTATION = clientGql`
   }
 `;
 
-interface QDraftMessageForChannel {
+interface DraftMessageForChannelQueryResult {
   draftMessageForChannel: DraftMessage | null;
 }
 
-interface QDraftMessageForChannelVariables {
+interface DraftMessageForChannelQueryVariables {
   channelId: string;
 }
 
 export const DRAFT_MESSAGE_FOR_CHANNEL_QUERY = clientGql`
-  query QGetDraftMessageForChannel($channelId: String!)  {
+  query GetDraftMessageForChannel($channelId: String!)  {
     draftMessageForChannel(channelId: $channelId) @client
   }
   `;
 
-export class DraftMessageForChannelQuery extends Query<QDraftMessageForChannel, QDraftMessageForChannelVariables> {}
+export class DraftMessageForChannelQuery extends Query<DraftMessageForChannelQueryResult, DraftMessageForChannelQueryVariables> {}

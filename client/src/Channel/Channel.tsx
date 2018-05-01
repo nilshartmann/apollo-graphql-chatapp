@@ -7,8 +7,8 @@ import { Col, Row } from "../layout";
 
 import { ChannelQueryVariables } from "./__generated__/ChannelQuery";
 import {
-  PostNewMessageMutation,
-  PostNewMessageMutation_postMessage,
+  PostNewMessageMutationResult,
+  PostNewMessageMutationResult_postMessage,
   PostNewMessageMutationVariables
 } from "./__generated__/PostNewMessageMutation";
 import MessageEditor from "./MessageEditor";
@@ -58,7 +58,7 @@ export default class Channel extends React.Component<ChannelProps> {
 
   postNewMessage = async (client: ApolloClient<any>, currentChannelId: string, newValue: string) => {
     const userId = getLocalUserId();
-    const mutationResult = await client.mutate<PostNewMessageMutation>({
+    const mutationResult = await client.mutate<PostNewMessageMutationResult>({
       mutation: POST_NEW_MESSAGE_MUTATION,
       variables: {
         channelId: currentChannelId,
@@ -66,7 +66,7 @@ export default class Channel extends React.Component<ChannelProps> {
         message: newValue
       } as PostNewMessageMutationVariables,
       update: (proxy, { data }) => {
-        const postMessage: PostNewMessageMutation_postMessage = data && data.postMessage;
+        const postMessage: PostNewMessageMutationResult_postMessage = data && data.postMessage;
         if (!postMessage) {
           return;
         }

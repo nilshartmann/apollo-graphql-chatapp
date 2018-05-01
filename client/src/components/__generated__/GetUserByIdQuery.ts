@@ -7,13 +7,13 @@
 // GraphQL query operation: GetUserByIdQuery
 // ====================================================
 
-export interface GetUserByIdQuery_user {
+export interface GetUserByIdQueryResult_user {
   id: string;
   name: string;  // The readable name
 }
 
-export interface GetUserByIdQuery {
-  user: GetUserByIdQuery_user | null;
+export interface GetUserByIdQueryResult {
+  user: GetUserByIdQueryResult_user | null;
 }
 
 export interface GetUserByIdQueryVariables {

@@ -7,13 +7,13 @@
 // GraphQL fragment: myChannel
 // ====================================================
 
-export interface myChannel_messages {
+export interface myChannelResult_messages {
   id: string;
   text: string;
 }
 
-export interface myChannel {
-  messages: myChannel_messages[];
+export interface myChannelResult {
+  messages: myChannelResult_messages[];
 }
 
 //==============================================================

@@ -8,13 +8,13 @@ import { Row, Col } from "../layout";
 import { gql, gql as clientGql } from "apollo-boost";
 import { Query, Subscription } from "react-apollo";
 import { timeOnly } from "../utils";
-import { ChannelListQuery, ChannelListQueryVariables } from "./__generated__/ChannelListQuery";
+import { ChannelListQueryResult, ChannelListQueryVariables } from "./__generated__/ChannelListQuery";
 import { RouteComponentProps, Link } from "react-router-dom";
 
 import { CurrentUser } from "../components";
-import { NewMessageSubscription, NewMessageSubscription_messageAdded } from "./__generated__/NewMessageSubscription";
+import { NewMessageSubscriptionResult, NewMessageSubscriptionResult_messageAdded } from "./__generated__/NewMessageSubscription";
 import { DraftMessage } from "../types";
-import { ChannelQuery, ChannelQuery_channel } from "../Channel/__generated__/ChannelQuery";
+import { ChannelQueryResult, ChannelQueryResult_channel } from "../Channel/__generated__/ChannelQuery";
 
 const NEW_MESSAGE_SUBSCRIPTION = gql`
   subscription NewMessageSubscription($channelIds: [String!]!) {
@@ -62,14 +62,13 @@ const CHANNEL_LIST_QUERY = gql`
   }
 `;
 
-class ChannelListQueryComponent extends Query<ChannelListQuery, ChannelListQueryVariables> {}
-class NewMessageSubscriptionComponent extends Subscription<NewMessageSubscription> {}
+class ChannelListQuery extends Query<ChannelListQueryResult, ChannelListQueryVariables> {}
 interface ChannelListProps extends RouteComponentProps<{ currentChannelId: string }> {}
 export default function ChannelList({ match }: ChannelListProps) {
   return (
     <CurrentUser>
       {({ id: currentUserId }) => (
-        <ChannelListQueryComponent
+        <ChannelListQuery
           query={CHANNEL_LIST_QUERY}
           variables={{
             memberId: currentUserId
@@ -99,14 +98,17 @@ export default function ChannelList({ match }: ChannelListProps) {
                 console.log("UPDATE QUERY prev:", prev);
                 console.log("UPDATE QUERY cur", subscriptionData);
 
-                const data: NewMessageSubscription | null = subscriptionData.data;
+                const data = subscriptionData.data;
 
                 if (!data) return prev;
 
                 const bla: any = prev;
-                const existingChannels: ChannelQuery_channel[] = bla.channels;
+                const existingChannels: ChannelQueryResult_channel[] = bla.channels;
 
-                const updateChannel = (c: ChannelQuery_channel, newLatestMessage: NewMessageSubscription_messageAdded) => {
+                const updateChannel = (
+                  c: ChannelQueryResult_channel,
+                  newLatestMessage: NewMessageSubscriptionResult_messageAdded
+                ) => {
                   const newMessage = { ...data.messageAdded, text: data.messageAdded.text + "ZZ" };
                   const updatedChannel = Object.assign({}, c, { latestMessage: data.messageAdded });
                   return updatedChannel;
@@ -159,14 +161,6 @@ export default function ChannelList({ match }: ChannelListProps) {
 
             return (
               <React.Fragment>
-                {/* <NewMessageSubscriptionComponent query={NEW_MESSAGE_SUBSCRIPTION} variables={{ channelIds }}>
-                  {function({ data, loading, error }) {
-                    console.log("SUBSCRIPTION loading: " + loading + " error: " + error);
-                    console.log("             data");
-                    console.log("NEW MESSAGE", data && data.messageAdded);
-                    return <div>{data && JSON.stringify(data.messageAdded)}</div>;
-                  }}
-                </NewMessageSubscriptionComponent> */}
                 <Query query={DRAFT_MESSAGES_QUERY}>
                   {({ data: draftMessageQueryResult }) => {
                     const draftMessages: DraftMessage[] = draftMessageQueryResult.draftMessages;
@@ -194,7 +188,7 @@ export default function ChannelList({ match }: ChannelListProps) {
               </React.Fragment>
             );
           }}
-        </ChannelListQueryComponent>
+        </ChannelListQuery>
       )}
     </CurrentUser>
   );

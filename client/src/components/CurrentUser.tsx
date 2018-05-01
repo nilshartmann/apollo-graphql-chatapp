@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { gql } from "apollo-boost";
 import { Query } from "react-apollo";
-import { GetUserByIdQuery, GetUserByIdQueryVariables } from "./__generated__/GetUserByIdQuery";
+import { GetUserByIdQueryResult, GetUserByIdQueryVariables } from "./__generated__/GetUserByIdQuery";
 import { getLocalUserId } from "../authService";
 
 const CURRENT_USER_QUERY = gql`
@@ -18,7 +18,7 @@ interface CurrentUserProps {
   children: (currentUser: { id: string; name: string }) => React.ReactNode;
 }
 
-class CurrentUserQuery extends Query<GetUserByIdQuery, GetUserByIdQueryVariables> {}
+class CurrentUserQuery extends Query<GetUserByIdQueryResult, GetUserByIdQueryVariables> {}
 
 export default function CurrentUser({ children }: CurrentUserProps) {
   const currentUserId = getLocalUserId();

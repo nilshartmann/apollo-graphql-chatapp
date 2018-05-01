@@ -7,25 +7,25 @@
 // GraphQL subscription operation: NewMessageSubscription
 // ====================================================
 
-export interface NewMessageSubscription_messageAdded_author {
+export interface NewMessageSubscriptionResult_messageAdded_author {
   id: string;
   name: string;  // The readable name
 }
 
-export interface NewMessageSubscription_messageAdded_channel {
+export interface NewMessageSubscriptionResult_messageAdded_channel {
   id: string;  // Unique identifier
 }
 
-export interface NewMessageSubscription_messageAdded {
+export interface NewMessageSubscriptionResult_messageAdded {
   id: string;
   date: string;
   text: string;
-  author: NewMessageSubscription_messageAdded_author;
-  channel: NewMessageSubscription_messageAdded_channel;
+  author: NewMessageSubscriptionResult_messageAdded_author;
+  channel: NewMessageSubscriptionResult_messageAdded_channel;
 }
 
-export interface NewMessageSubscription {
-  messageAdded: NewMessageSubscription_messageAdded;
+export interface NewMessageSubscriptionResult {
+  messageAdded: NewMessageSubscriptionResult_messageAdded;
 }
 
 export interface NewMessageSubscriptionVariables {

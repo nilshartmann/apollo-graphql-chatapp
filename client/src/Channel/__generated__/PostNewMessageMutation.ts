@@ -7,20 +7,20 @@
 // GraphQL mutation operation: PostNewMessageMutation
 // ====================================================
 
-export interface PostNewMessageMutation_postMessage_author {
+export interface PostNewMessageMutationResult_postMessage_author {
   name: string;  // The readable name
   id: string;
 }
 
-export interface PostNewMessageMutation_postMessage {
+export interface PostNewMessageMutationResult_postMessage {
   id: string;
   text: string;
   date: string;
-  author: PostNewMessageMutation_postMessage_author;
+  author: PostNewMessageMutationResult_postMessage_author;
 }
 
-export interface PostNewMessageMutation {
-  postMessage: PostNewMessageMutation_postMessage;
+export interface PostNewMessageMutationResult {
+  postMessage: PostNewMessageMutationResult_postMessage;
 }
 
 export interface PostNewMessageMutationVariables {

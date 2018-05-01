@@ -1,4 +1,4 @@
-import { ChannelQuery_channel } from "./__generated__/ChannelQuery";
+import { ChannelQueryResult_channel } from "./__generated__/ChannelQuery";
 import * as React from "react";
 import * as styles from "./Channel.scss";
 import { longDate } from "../utils";
@@ -7,7 +7,7 @@ import { Row, Col } from "../layout";
 import Avatar from "../components/Avatar";
 
 interface MessagesListProps {
-  channel: ChannelQuery_channel;
+  channel: ChannelQueryResult_channel;
 }
 
 export default class MessageList extends React.Component<MessagesListProps> {

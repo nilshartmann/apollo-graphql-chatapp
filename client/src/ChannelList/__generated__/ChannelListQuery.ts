@@ -7,26 +7,26 @@
 // GraphQL query operation: ChannelListQuery
 // ====================================================
 
-export interface ChannelListQuery_channels_latestMessage_author {
+export interface ChannelListQueryResult_channels_latestMessage_author {
   id: string;
   name: string;  // The readable name
 }
 
-export interface ChannelListQuery_channels_latestMessage {
+export interface ChannelListQueryResult_channels_latestMessage {
   id: string;
   date: string;
-  author: ChannelListQuery_channels_latestMessage_author;
+  author: ChannelListQueryResult_channels_latestMessage_author;
   text: string;
 }
 
-export interface ChannelListQuery_channels {
+export interface ChannelListQueryResult_channels {
   id: string;                                              // Unique identifier
   title: string;                                           // Human-readable title of this Channel
-  latestMessage: ChannelListQuery_channels_latestMessage;  // The newest message that have been posted to this channel
+  latestMessage: ChannelListQueryResult_channels_latestMessage;  // The newest message that have been posted to this channel
 }
 
-export interface ChannelListQuery {
-  channels: ChannelListQuery_channels[];
+export interface ChannelListQueryResult {
+  channels: ChannelListQueryResult_channels[];
 }
 
 export interface ChannelListQueryVariables {
