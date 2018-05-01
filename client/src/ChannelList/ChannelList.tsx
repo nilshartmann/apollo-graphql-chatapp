@@ -102,17 +102,16 @@ export default function ChannelList({ match }: ChannelListProps) {
                 channelIds: data.channels.map(channel => channel.id)
               },
               updateQuery: (prev, { subscriptionData }) => {
-                // QUESTION: why is updatequery untyped ???
+                // QUESTION: why is updatequery untyped ??? https://github.com/apollographql/apollo-client/issues/3391
+                const subscriptionResult = subscriptionData.data as NewMessageSubscriptionResult;
+                const prevQueryChannelResult: ChannelListQueryResult = prev as ChannelListQueryResult;
+
                 console.log("UPDATE QUERY prev:", prev);
                 console.log("UPDATE QUERY data", subscriptionData.data);
 
-                const subscriptionResult = subscriptionData.data as NewMessageSubscriptionResult;
-                if (!subscriptionResult) return prev;
+                if (!subscriptionResult) return prevQueryChannelResult;
 
-                const prevQueryChannelResult: ChannelListQueryResult = prev as ChannelListQueryResult;
-                const existingChannels = prevQueryChannelResult.channels;
-
-                const newChannels = existingChannels.map(
+                const newChannels = prevQueryChannelResult.channels.map(
                   ec =>
                     ec.id === subscriptionResult.messageAdded.channel.id
                       ? {
@@ -123,39 +122,36 @@ export default function ChannelList({ match }: ChannelListProps) {
                 );
 
                 return {
-                  ...prev,
+                  ...prevQueryChannelResult,
                   channels: newChannels
                 };
               }
             });
 
             return (
-              <React.Fragment>
-                <Query query={DRAFT_MESSAGES_QUERY}>
-                  {({ data: draftMessageQueryResult }) => {
-                    const draftMessages: DraftMessage[] = draftMessageQueryResult.draftMessages;
+              <Query query={DRAFT_MESSAGES_QUERY}>
+                {({ data: draftMessageQueryResult }) => {
+                  const draftMessages: DraftMessage[] = draftMessageQueryResult.draftMessages;
 
-                    const getDraftMessageForChannel = (channelId: string) => {
-                      const r = draftMessages.find(dm => dm.id === channelId);
+                  const getDraftMessageForChannel = (channelId: string) => {
+                    const r = draftMessages.find(dm => dm.id === channelId);
+                    return r ? r.text : null;
+                  };
 
-                      return r ? r.text : null;
-                    };
-
-                    return data.channels.map(channel => (
-                      <ChannelCard
-                        key={channel.id}
-                        channelId={channel.id}
-                        title={channel.title}
-                        author={channel.latestMessage.author.name}
-                        lastMessage={channel.latestMessage.text}
-                        draftMessage={getDraftMessageForChannel(channel.id)}
-                        date={channel.latestMessage.date}
-                        active={channel.id === match.params.currentChannelId}
-                      />
-                    ));
-                  }}
-                </Query>
-              </React.Fragment>
+                  return data.channels.map(channel => (
+                    <ChannelCard
+                      key={channel.id}
+                      channelId={channel.id}
+                      title={channel.title}
+                      author={channel.latestMessage.author.name}
+                      lastMessage={channel.latestMessage.text}
+                      draftMessage={getDraftMessageForChannel(channel.id)}
+                      date={channel.latestMessage.date}
+                      active={channel.id === match.params.currentChannelId}
+                    />
+                  ));
+                }}
+              </Query>
             );
           }}
         </ChannelListQuery>
