@@ -4,7 +4,7 @@ import * as styles from "./Channel.scss";
 
 type MessageListSnapshot = boolean;
 interface MessageListProps {
-  messages: ChannelQueryResult_channel_messages[];
+  messages: Array<any>;
 }
 export default class MessageList extends React.Component<MessageListProps, {}, MessageListSnapshot> {
   messageListRef: HTMLDivElement | null = null;
@@ -45,7 +45,7 @@ export default class MessageList extends React.Component<MessageListProps, {}, M
   }
 
   render() {
-    const { messages, children } = this.props;
+    const { children } = this.props;
 
     return (
       <div className={styles.ChannelMessageList} ref={r => (this.messageListRef = r)}>

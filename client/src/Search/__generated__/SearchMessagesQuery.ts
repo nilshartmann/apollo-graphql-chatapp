@@ -17,11 +17,17 @@ export interface SearchMessagesQueryResult_searchMessages_edges_node_author {
   name: string;  // The readable name
 }
 
+export interface SearchMessagesQueryResult_searchMessages_edges_node_channel {
+  id: string;     // Unique identifier
+  title: string;  // Human-readable title of this Channel
+}
+
 export interface SearchMessagesQueryResult_searchMessages_edges_node {
   id: string;
   date: string;
   text: string;
   author: SearchMessagesQueryResult_searchMessages_edges_node_author;
+  channel: SearchMessagesQueryResult_searchMessages_edges_node_channel;
 }
 
 export interface SearchMessagesQueryResult_searchMessages_edges {

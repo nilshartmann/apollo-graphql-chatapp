@@ -9,7 +9,7 @@ import {
   PostNewMessageMutationResult_postMessage,
   PostNewMessageMutationVariables
 } from "./__generated__/PostNewMessageMutation";
-import MessageEditor from "./MessageEditor";
+import Editor from "../components/Editor";
 import { DraftMessage, SubscribeToMoreFn, SubscribeToMoreFnResult } from "../types";
 
 import { ApolloClient } from "apollo-boost";
@@ -197,10 +197,11 @@ export default class Channel extends React.Component<ChannelProps> {
                   {({ data: result }) => {
                     const message = (result && result.draftMessageForChannel && result.draftMessageForChannel.text) || "";
                     return (
-                      <MessageEditor
-                        message={message}
-                        onMessageChange={currentValue => this.publishDraftMessage(client, currentChannelId, currentValue)}
-                        onNewMessage={newValue => this.postNewMessage(client, currentChannelId, newValue)}
+                      <Editor
+                        label="Enter your message"
+                        value={message}
+                        onValueChange={currentValue => this.publishDraftMessage(client, currentChannelId, currentValue)}
+                        onSubmit={newValue => this.postNewMessage(client, currentChannelId, newValue)}
                       />
                     );
                   }}

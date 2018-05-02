@@ -5,11 +5,14 @@ import { longDate } from "../utils";
 import { Row, Col } from "../layout";
 import { ChannelQueryResult_channel_messages } from "./__generated__/ChannelQuery";
 
+import { Link } from "react-router-dom";
+
 interface MessageViewProps {
   message: ChannelQueryResult_channel_messages;
+  channel?: { id: string; title: string };
 }
 
-export default function MessageView({ message }: MessageViewProps) {
+export default function MessageView({ message, channel }: MessageViewProps) {
   return (
     <Row key={message.id} className={styles.Message}>
       <Col xs={2}>
@@ -18,7 +21,10 @@ export default function MessageView({ message }: MessageViewProps) {
       <Col>
         <h1>{message.author.name}</h1>
         <div className={styles.Text}>{message.text}</div>
-        <div className={styles.Date}>{longDate(message.date)}</div>
+        <div className={styles.Date}>
+          {longDate(message.date)}
+          {channel && <Link to={`/channel/${channel.id}`}> in {channel.title}</Link>}
+        </div>
       </Col>
     </Row>
   );

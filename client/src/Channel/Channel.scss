@@ -21,33 +21,6 @@
   }
 }
 
-.MessageEditor {
-  @include card();
-  margin-left: 0.5rem;
-  margin-right: 0px;
-
-  .Form {
-    display: flex;
-  }
-  input {
-    border: 0;
-    border-bottom: 1px solid $color-one;
-    background-color: $color-light;
-
-    font-size: 1.25rem;
-    flex-basis: 0;
-    flex-grow: 1;
-    max-width: 100%;
-
-    margin-right: 1rem;
-
-    &:focus,
-    &:active {
-      color: $color-text;
-    }
-  }
-}
-
 .Message {
   @include card();
   margin-left: 0.5rem;
@@ -60,5 +33,9 @@
   .Date {
     margin-top: 0.5rem;
     font-weight: lighter;
+
+    a {
+      color: $color-one;
+    }
   }
 }

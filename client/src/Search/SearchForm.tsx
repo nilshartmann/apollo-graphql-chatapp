@@ -1,7 +1,8 @@
 import * as React from "react";
 
 import { Row, Col } from "../layout";
-
+import Button from "../components/Button";
+import Editor from "../components/Editor";
 interface SearchFormProps {
   onSearch(searchString: string): void;
 }
@@ -56,9 +57,9 @@ export default class SearchForm extends React.Component<SearchFormProps, SearchF
             onChange={this.onSearchStringChange}
             onKeyPress={this.onKeyPress}
           />
-          <button disabled={searchButtonDisabled} onClick={this.doSearch}>
+          <Button disabled={searchButtonDisabled} onClick={this.doSearch}>
             Search
-          </button>
+          </Button>
         </Col>
       </Row>
     );
