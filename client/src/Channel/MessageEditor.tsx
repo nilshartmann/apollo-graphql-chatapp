@@ -44,7 +44,7 @@ export default class MessageEditor extends React.Component<MessageEditorProps> {
     const sendButtonDisabled = !this.isValidMessage();
 
     return (
-      <Row className={styles.Editor}>
+      <Row className={styles.MessageEditor}>
         <Col className={styles.Form}>
           <input
             placeholder="Enter your message"

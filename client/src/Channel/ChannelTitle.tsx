@@ -22,7 +22,7 @@ export default class ChannelTitle extends React.Component<ChannelTitleProps, Cha
     const memberNames = expanded && members.map(m => m.name).join(", ");
 
     return (
-      <Row className={styles.Title}>
+      <Row className={styles.ChannelTitle}>
         <Col>
           <h1>{title}</h1>
         </Col>
