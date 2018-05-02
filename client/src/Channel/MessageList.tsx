@@ -1,18 +1,13 @@
-import { ChannelQueryResult_channel } from "./__generated__/ChannelQuery";
+import { ChannelQueryResult_channel, ChannelQueryResult_channel_messages } from "./__generated__/ChannelQuery";
 import * as React from "react";
 import * as styles from "./Channel.scss";
-import ChannelTitle from "./ChannelTitle";
-import { SubscribeToMoreFnResult } from "../types";
-import MessageView from "./MessageView";
-interface MessagesListProps {
-  subscribeToNewMessages(): SubscribeToMoreFnResult;
-  channel: ChannelQueryResult_channel;
-}
 
-export default class MessageList extends React.Component<MessagesListProps> {
-  unsubscribeFromNewMessages: SubscribeToMoreFnResult | null = null;
+type MessageListSnapshot = boolean;
+interface MessageListProps {
+  messages: ChannelQueryResult_channel_messages[];
+}
+export default class MessageList extends React.Component<MessageListProps, {}, MessageListSnapshot> {
   messageListRef: HTMLDivElement | null = null;
-  scrollAtBottom: boolean = true;
 
   scrollToBottom = () => {
     if (!this.messageListRef) {
@@ -24,38 +19,37 @@ export default class MessageList extends React.Component<MessagesListProps> {
     this.messageListRef.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
   };
 
-  componentWillUpdate(nextProps: MessagesListProps) {
-    const newMessageArrived = nextProps.channel.messages.length !== this.props.channel.messages.length;
+  getSnapshotBeforeUpdate(prevProps: MessageListProps): MessageListSnapshot {
+    const newMessageArrived = prevProps.messages.length !== this.props.messages.length;
     if (!newMessageArrived || !this.messageListRef) {
-      return;
+      // no new messages
+      return false;
     }
-    const scrollPos = this.messageListRef.scrollTop;
-    const scrollBottom = this.messageListRef.scrollHeight - this.messageListRef.clientHeight;
-    this.scrollAtBottom = scrollBottom <= 0 || scrollPos === scrollBottom;
+
+    const messageListRef = this.messageListRef;
+
+    const currentScrollTop = Math.floor(messageListRef.scrollTop);
+    const scrollBottom = messageListRef.scrollHeight - messageListRef.clientHeight;
+    const shouldScrollAtBottom = scrollBottom <= 0 || currentScrollTop === scrollBottom || currentScrollTop === scrollBottom - 1;
+    return shouldScrollAtBottom;
   }
 
   componentDidMount() {
-    this.unsubscribeFromNewMessages = this.props.subscribeToNewMessages();
     this.scrollToBottom();
   }
 
-  componentWillUnmount() {
-    this.unsubscribeFromNewMessages && this.unsubscribeFromNewMessages();
-  }
-
-  componentDidUpdate() {
-    if (this.scrollAtBottom) {
+  componentDidUpdate(_: any, __: any, snapshot: MessageListSnapshot) {
+    if (snapshot) {
       this.scrollToBottom();
     }
   }
 
   render() {
-    const { channel } = this.props;
-    return (
-      <div className={styles.MessagesList} ref={r => (this.messageListRef = r)}>
-        <ChannelTitle channel={channel} />
+    const { messages, children } = this.props;
 
-        {channel.messages.map(message => <MessageView key={message.id} message={message} />)}
+    return (
+      <div className={styles.ChannelMessageList} ref={r => (this.messageListRef = r)}>
+        {children}
       </div>
     );
   }

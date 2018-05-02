@@ -13,7 +13,7 @@ import MessageEditor from "./MessageEditor";
 import { DraftMessage, SubscribeToMoreFn, SubscribeToMoreFnResult } from "../types";
 
 import { ApolloClient } from "apollo-boost";
-import MessageList from "./MessageList";
+import ChannelMessageList from "./ChannelMessageList";
 import {
   ChannelQuery,
   CHANNEL_QUERY,
@@ -187,8 +187,8 @@ export default class Channel extends React.Component<ChannelProps> {
 
             const { channel } = data;
             return (
-              <div className={styles.XXX}>
-                <MessageList
+              <React.Fragment>
+                <ChannelMessageList
                   subscribeToNewMessages={() => this.subscribeToNewMessages(subscribeToMore, currentChannelId)}
                   channel={channel}
                 />
@@ -205,7 +205,7 @@ export default class Channel extends React.Component<ChannelProps> {
                     );
                   }}
                 </DraftMessageForChannelQuery>
-              </div>
+              </React.Fragment>
             );
           }}
         </ChannelQuery>
