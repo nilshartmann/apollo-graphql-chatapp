@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as qs from "query-string";
 
 import { gql } from "apollo-boost";
 import { Query } from "react-apollo";
@@ -10,6 +11,7 @@ import MessageView from "../Channel/MessageView";
 import { SearchMessagesQueryResult, SearchMessagesQueryVariables } from "./__generated__/SearchMessagesQuery";
 import Button from "../components/Button";
 import { UncontrolledEditor } from "../components/Editor";
+import { RouteComponentProps } from "react-router";
 const SEARCH_MESSAGES_QUERY = gql`
   query SearchMessagesQuery($searchString: String!, $after: String) {
     searchMessages(searchString: $searchString, first: 10, after: $after) {
@@ -36,16 +38,27 @@ const SEARCH_MESSAGES_QUERY = gql`
     }
   }
 `;
+class SearchQuery extends Query<SearchMessagesQueryResult, SearchMessagesQueryVariables> {}
 
 interface SearchState {
   searchString: string;
 }
-class SearchQuery extends Query<SearchMessagesQueryResult, SearchMessagesQueryVariables> {}
 
-export default class Search extends React.Component<{}, SearchState> {
+interface SearchProps extends RouteComponentProps<void> {}
+
+export default class Search extends React.Component<SearchProps, SearchState> {
   readonly state: SearchState = {
     searchString: ""
   };
+
+  static getDerivedStateFromProps(nextProps: SearchProps) {
+    const parsed = qs.parse(nextProps.location.search);
+    if (parsed && parsed.query) {
+      return { searchString: parsed.query };
+    }
+
+    return null;
+  }
 
   setSearchString = (searchString: string) => {
     this.setState({
@@ -61,7 +74,12 @@ export default class Search extends React.Component<{}, SearchState> {
 
     return (
       <React.Fragment>
-        <UncontrolledEditor label="Enter Searchphrase" onSubmit={this.setSearchString} />
+        <UncontrolledEditor
+          label="Enter Searchphrase"
+          focusOnMount={true}
+          onSubmit={this.setSearchString}
+          initialValue={searchString}
+        />
         <SearchQuery query={SEARCH_MESSAGES_QUERY} skip={skipQuery} variables={{ searchString }}>
           {({ loading, error, data, fetchMore }) => {
             if (skipQuery) {

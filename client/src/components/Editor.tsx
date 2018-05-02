@@ -8,11 +8,14 @@ import Button from "../components/Button";
 interface EditorProps {
   label: string;
   value: string;
+  focusOnMount?: boolean;
   onValueChange(newValue: string): void;
   onSubmit(currentValue: string): void;
 }
 
 export default class Editor extends React.Component<EditorProps> {
+  private inputRef: HTMLInputElement | null = null;
+
   onInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.charCode === 13 && this.isValidValue()) {
       e.preventDefault();
@@ -20,6 +23,10 @@ export default class Editor extends React.Component<EditorProps> {
 
       return false;
     }
+  };
+
+  setInputRef = (r: HTMLInputElement | null) => {
+    this.inputRef = r;
   };
 
   isValidValue() {
@@ -40,6 +47,10 @@ export default class Editor extends React.Component<EditorProps> {
     onSubmit(value);
   };
 
+  componentDidMount() {
+    this.props.focusOnMount && this.inputRef && this.inputRef.focus();
+  }
+
   render() {
     const { value, label } = this.props;
     const sendButtonDisabled = !this.isValidValue();
@@ -47,7 +58,13 @@ export default class Editor extends React.Component<EditorProps> {
     return (
       <Row className={styles.Editor}>
         <Col className={styles.Form}>
-          <input placeholder={label} value={value} onKeyPress={this.onInputKeyPress} onChange={this.onValueChange} />
+          <input
+            ref={this.setInputRef}
+            placeholder={label}
+            value={value}
+            onKeyPress={this.onInputKeyPress}
+            onChange={this.onValueChange}
+          />
 
           <Button disabled={sendButtonDisabled} onClick={this.onSend}>
             Send
@@ -60,26 +77,42 @@ export default class Editor extends React.Component<EditorProps> {
 
 interface UncontrolledEditorProps {
   label: string;
+  initialValue?: string;
+  focusOnMount?: boolean;
   onSubmit(currentValue: string): void;
 }
 
 interface UncontrolledEditorState {
+  initialValue: string;
   value: string;
 }
 
 export class UncontrolledEditor extends React.Component<UncontrolledEditorProps, UncontrolledEditorState> {
   readonly state = {
-    value: ""
+    value: "",
+    initialValue: ""
   };
+
+  static getDerivedStateFromProps(nextProps: UncontrolledEditorProps, state: UncontrolledEditorState) {
+    if (nextProps.initialValue !== state.initialValue) {
+      return {
+        value: nextProps.initialValue,
+        initialValue: nextProps.initialValue
+      };
+    }
+    return null;
+  }
 
   onValueChange = (newValue: string) => {
     this.setState({ value: newValue });
   };
 
   render() {
-    const { label, onSubmit } = this.props;
+    const { label, onSubmit, focusOnMount } = this.props;
     const { value } = this.state;
 
-    return <Editor label={label} onSubmit={onSubmit} onValueChange={this.onValueChange} value={value} />;
+    return (
+      <Editor label={label} focusOnMount={focusOnMount} onSubmit={onSubmit} onValueChange={this.onValueChange} value={value} />
+    );
   }
 }
