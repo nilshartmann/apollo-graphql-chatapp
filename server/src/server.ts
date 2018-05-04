@@ -45,7 +45,8 @@ app.post("/login", (req, res) => {
     {
       userId: user.id
     },
-    JWT_SECRET
+    JWT_SECRET,
+    { expiresIn: "1d" }
   );
   return res.status(200).send({
     token,

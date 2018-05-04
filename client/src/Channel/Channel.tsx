@@ -25,7 +25,7 @@ import {
   ON_NEW_MESSAGE_SUBSCRIPTION
 } from "./ChannelQueries";
 import { NotFound } from "./NotFound";
-import ChannelError from "./ChannelError";
+import GraphQLErrorViewer from "../components/GraphQLErrorViewer";
 import ChannelLoadingIndicator from "./ChannelLoadingIndicator";
 import { getLocalUserId } from "../authService";
 import { OnNewMessageSubscriptionVariables, OnNewMessageSubscriptionResult } from "./__generated__/OnNewMessageSubscription";
@@ -165,7 +165,11 @@ export default class Channel extends React.Component<ChannelProps> {
 
   render() {
     // const { refetch, currentChannelId } = this.state;
-    const { match: { params: { currentChannelId } } } = this.props;
+    const {
+      match: {
+        params: { currentChannelId }
+      }
+    } = this.props;
 
     // console.log(`Channel#render() currentChannelId: ${currentChannelId} refetch: ${refetch}`);
 
@@ -178,7 +182,7 @@ export default class Channel extends React.Component<ChannelProps> {
             }
 
             if (error) {
-              return <ChannelError error={error} />;
+              return <GraphQLErrorViewer error={error} />;
             }
 
             if (!data || !data.channel) {
