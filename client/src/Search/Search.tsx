@@ -6,15 +6,19 @@ import { Query } from "react-apollo";
 
 import { Row, Col } from "../layout";
 import SearchForm from "./SearchForm";
-import MessageList from "../Channel/MessageList";
+import { MessageList } from "../Channel/MessageList";
 import MessageView from "../Channel/MessageView";
 import { SearchMessagesQueryResult, SearchMessagesQueryVariables } from "./__generated__/SearchMessagesQuery";
 import Button from "../components/Button";
 import { UncontrolledEditor } from "../components/Editor";
 import { RouteComponentProps } from "react-router";
+import * as styles from "./Search.scss";
+
+const MAX_HITS_PER_PAGE = 7;
+
 const SEARCH_MESSAGES_QUERY = gql`
   query SearchMessagesQuery($searchString: String!, $after: String) {
-    searchMessages(searchString: $searchString, first: 10, after: $after) {
+    searchMessages(searchString: $searchString, first: ${MAX_HITS_PER_PAGE}, after: $after) {
       pageInfo {
         hasNextPage
         hasPreviousPage
@@ -76,11 +80,12 @@ export default class Search extends React.Component<SearchProps, SearchState> {
       <React.Fragment>
         <UncontrolledEditor
           label="Enter Searchphrase"
+          buttonLabel="Search"
           focusOnMount={true}
           onSubmit={this.setSearchString}
           initialValue={searchString}
         />
-        <SearchQuery query={SEARCH_MESSAGES_QUERY} skip={skipQuery} variables={{ searchString }}>
+        <SearchQuery query={SEARCH_MESSAGES_QUERY} skip={skipQuery} fetchPolicy="network-only" variables={{ searchString }}>
           {({ loading, error, data, fetchMore }) => {
             if (skipQuery) {
               return null;
@@ -104,31 +109,37 @@ export default class Search extends React.Component<SearchProps, SearchState> {
               return <h1>No messages found</h1>;
             }
 
+            // height: calc(100vh - 17rem);
             return (
-              <React.Fragment>
-                <MessageList messages={edges}>
+              <div>
+                <h1 className={styles.SearchResultTitle}>
+                  Messages containing <b>{searchString}</b>:
+                </h1>
+
+                <MessageList messages={edges} className={styles.SearchList}>
                   {edges.map(e => <MessageView key={e.node.id} message={e.node} channel={e.node.channel} />)}
+                  {pageInfo.hasNextPage && (
+                    <div
+                      className={styles.LoadMore}
+                      onClick={() => {
+                        fetchMore({
+                          query: SEARCH_MESSAGES_QUERY,
+                          variables: {
+                            searchString,
+                            after: edges[edges.length - 1].cursor
+                          },
+                          updateQuery: (prev, { fetchMoreResult }) => {
+                            if (!fetchMoreResult) return prev;
+                            return fetchMoreResult;
+                          }
+                        });
+                      }}
+                    >
+                      Load more...
+                    </div>
+                  )}
                 </MessageList>
-                {pageInfo.hasNextPage && (
-                  <Button
-                    onClick={() => {
-                      fetchMore({
-                        query: SEARCH_MESSAGES_QUERY,
-                        variables: {
-                          searchString,
-                          after: edges[edges.length - 1].cursor
-                        },
-                        updateQuery: (prev, { fetchMoreResult }) => {
-                          if (!fetchMoreResult) return prev;
-                          return fetchMoreResult;
-                        }
-                      });
-                    }}
-                  >
-                    More...
-                  </Button>
-                )}
-              </React.Fragment>
+              </div>
             );
           }}
         </SearchQuery>

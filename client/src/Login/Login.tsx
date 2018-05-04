@@ -1,7 +1,11 @@
 import * as React from "react";
+import { Row, Col } from "../layout";
+import Input from "../components/Input";
 import Button from "../components/Button";
 import { setLocalAuth } from "../authService";
 import { RouteComponentProps } from "react-router";
+
+import * as styles from "./Login.scss";
 
 interface LoginProps extends RouteComponentProps<{}> {}
 
@@ -12,10 +16,14 @@ interface LoginState {
 }
 
 export default class Login extends React.Component<LoginProps, LoginState> {
+  usernameInputRef: HTMLInputElement | null = null;
+
   readonly state: LoginState = {
     username: "",
     password: ""
   };
+
+  setUsernameInputRef = (ref: HTMLInputElement | null) => (this.usernameInputRef = ref);
 
   onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.charCode === 13) {
@@ -59,39 +67,48 @@ export default class Login extends React.Component<LoginProps, LoginState> {
     this.props.history.replace(from);
   };
 
+  componentDidMount() {
+    this.usernameInputRef && this.usernameInputRef.focus();
+  }
+
   render() {
     const { username, password, error } = this.state;
 
     return (
-      <div>
-        <h1>Login</h1>
-        <form>
-          <label htmlFor="username">Username</label>
-          <input
-            id="username"
-            type="text"
-            name="username"
-            value={username}
-            onChange={this.onInputChange}
-            onKeyPress={this.onKeyPress}
-          />
+      <div className={styles.Login}>
+        <Col xs={6}>
+          <div className={styles.Form}>
+            <h1>Login</h1>
+            <form>
+              <label htmlFor="username">Username</label>
+              <Input
+                id="username"
+                type="text"
+                name="username"
+                inputRef={this.setUsernameInputRef}
+                value={username}
+                onChange={this.onInputChange}
+                onKeyPress={this.onKeyPress}
+              />
 
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="text"
-            name="password"
-            value={password}
-            onChange={this.onInputChange}
-            onKeyPress={this.onKeyPress}
-          />
+              <label htmlFor="password">Password</label>
+              <Input
+                id="password"
+                type="text"
+                name="password"
+                value={password}
+                onChange={this.onInputChange}
+                onKeyPress={this.onKeyPress}
+              />
 
-          <Button type="button" onClick={this.doLogin}>
-            Login
-          </Button>
+              <Button type="button" onClick={this.doLogin}>
+                Login
+              </Button>
 
-          {error && <b>Login failed: {error}</b>}
-        </form>
+              {error && <div className={styles.Error}>Login failed: {error}</div>}
+            </form>
+          </div>
+        </Col>
       </div>
     );
   }

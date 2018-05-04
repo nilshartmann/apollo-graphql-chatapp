@@ -3,10 +3,12 @@ import * as React from "react";
 import * as styles from "./Editor.scss";
 
 import { Col, Row } from "../layout";
+import Input from "../components/Input";
 import Button from "../components/Button";
 
 interface EditorProps {
   label: string;
+  buttonLabel?: string;
   value: string;
   focusOnMount?: boolean;
   onValueChange(newValue: string): void;
@@ -52,22 +54,15 @@ export default class Editor extends React.Component<EditorProps> {
   }
 
   render() {
-    const { value, label } = this.props;
+    const { value, label, buttonLabel = "Send" } = this.props;
     const sendButtonDisabled = !this.isValidValue();
 
     return (
       <Row className={styles.Editor}>
         <Col className={styles.Form}>
-          <input
-            ref={this.setInputRef}
-            placeholder={label}
-            value={value}
-            onKeyPress={this.onInputKeyPress}
-            onChange={this.onValueChange}
-          />
-
+          <Input placeholder={label} value={value} onKeyPress={this.onInputKeyPress} onChange={this.onValueChange} />
           <Button disabled={sendButtonDisabled} onClick={this.onSend}>
-            Send
+            {buttonLabel}
           </Button>
         </Col>
       </Row>
@@ -77,6 +72,7 @@ export default class Editor extends React.Component<EditorProps> {
 
 interface UncontrolledEditorProps {
   label: string;
+  buttonLabel?: string;
   initialValue?: string;
   focusOnMount?: boolean;
   onSubmit(currentValue: string): void;
@@ -108,11 +104,18 @@ export class UncontrolledEditor extends React.Component<UncontrolledEditorProps,
   };
 
   render() {
-    const { label, onSubmit, focusOnMount } = this.props;
+    const { label, buttonLabel, onSubmit, focusOnMount } = this.props;
     const { value } = this.state;
 
     return (
-      <Editor label={label} focusOnMount={focusOnMount} onSubmit={onSubmit} onValueChange={this.onValueChange} value={value} />
+      <Editor
+        label={label}
+        buttonLabel={buttonLabel}
+        focusOnMount={focusOnMount}
+        onSubmit={onSubmit}
+        onValueChange={this.onValueChange}
+        value={value}
+      />
     );
   }
 }

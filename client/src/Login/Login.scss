@@ -1,0 +1,40 @@
+@import "../_vars";
+
+.Login {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+
+  margin-top: 4rem;
+  margin-bottom: 2rem;
+
+  label,
+  input {
+    width: 100%;
+  }
+
+  input {
+    margin-bottom: 2rem;
+    background-color: white;
+  }
+
+  .Form {
+    @include card();
+
+    padding: 1.5rem 2rem;
+
+    h1 {
+      margin-bottom: 1rem;
+    }
+
+    button {
+      // margin-top: 2rem;
+      padding: 0.5rem 3rem;
+    }
+  }
+}
+
+.Error {
+  margin-top: 1rem;
+  font-weight: bold;
+}

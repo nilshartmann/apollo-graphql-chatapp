@@ -1,7 +1,7 @@
 import * as React from "react";
 import { SubscribeToMoreFnResult } from "../types";
 import { ChannelQueryResult_channel } from "./__generated__/ChannelQuery";
-import MessageList from "./MessageList";
+import AutoScrollMessageList from "./MessageList";
 import ChannelTitle from "./ChannelTitle";
 import MessageView from "./MessageView";
 
@@ -22,10 +22,10 @@ export default class ChannelMessageList extends React.Component<ChannelMessageLi
   render() {
     const { channel } = this.props;
     return (
-      <MessageList messages={this.props.channel.messages}>
+      <AutoScrollMessageList messages={this.props.channel.messages}>
         <ChannelTitle channel={channel} />
         {channel.messages.map(message => <MessageView key={message.id} message={message} />)}
-      </MessageList>
+      </AutoScrollMessageList>
     );
   }
 }

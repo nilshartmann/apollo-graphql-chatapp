@@ -2,11 +2,16 @@ import { ChannelQueryResult_channel, ChannelQueryResult_channel_messages } from 
 import * as React from "react";
 import * as styles from "./Channel.scss";
 
-type MessageListSnapshot = boolean;
-interface MessageListProps {
+type AutoScrollMessageListSnapshot = boolean;
+interface AutoScrollMessageListProps {
+  className?: string;
   messages: Array<any>;
 }
-export default class MessageList extends React.Component<MessageListProps, {}, MessageListSnapshot> {
+export default class AutoScrollMessageList extends React.Component<
+  AutoScrollMessageListProps,
+  {},
+  AutoScrollMessageListSnapshot
+> {
   messageListRef: HTMLDivElement | null = null;
 
   scrollToBottom = () => {
@@ -19,7 +24,7 @@ export default class MessageList extends React.Component<MessageListProps, {}, M
     this.messageListRef.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
   };
 
-  getSnapshotBeforeUpdate(prevProps: MessageListProps): MessageListSnapshot {
+  getSnapshotBeforeUpdate(prevProps: AutoScrollMessageListProps): AutoScrollMessageListSnapshot {
     const newMessageArrived = prevProps.messages.length !== this.props.messages.length;
     if (!newMessageArrived || !this.messageListRef) {
       // no new messages
@@ -38,19 +43,29 @@ export default class MessageList extends React.Component<MessageListProps, {}, M
     this.scrollToBottom();
   }
 
-  componentDidUpdate(_: any, __: any, snapshot: MessageListSnapshot) {
+  componentDidUpdate(_: any, __: any, snapshot: AutoScrollMessageListSnapshot) {
     if (snapshot) {
       this.scrollToBottom();
     }
   }
 
   render() {
-    const { children } = this.props;
+    const { children, className = "" } = this.props;
+
+    const effectiveClassName = `${styles.ChannelMessageList} ${className}`;
 
     return (
-      <div className={styles.ChannelMessageList} ref={r => (this.messageListRef = r)}>
+      <div className={effectiveClassName} ref={r => (this.messageListRef = r)}>
         {children}
       </div>
     );
   }
+}
+
+interface MessageListProps extends AutoScrollMessageListProps {
+  children: React.ReactNode;
+}
+export function MessageList({ messages, className = "", children }: MessageListProps) {
+  const effectiveClassName = `${styles.ChannelMessageList} ${className}`;
+  return <div className={effectiveClassName}>{children}</div>;
 }

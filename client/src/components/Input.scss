@@ -1,0 +1,19 @@
+@import "../_vars";
+
+.Input {
+  border: 0;
+  border-bottom: 1px solid $color-one;
+  background-color: $color-light;
+
+  font-size: 1.25rem;
+  flex-basis: 0;
+  flex-grow: 1;
+  max-width: 100%;
+
+  margin-right: 1rem;
+
+  &:focus,
+  &:active {
+    color: $color-text;
+  }
+}
