@@ -60,15 +60,17 @@ app.use(
     secret: JWT_SECRET,
     credentialsRequired: false
   }),
-  graphqlExpress(
-    req =>
-      console.log("User from token", req && req.user) || {
-        schema,
-        currentUserId: {
-          user: req && req.user && req.user.userId
-        } as ResolverContext
-      }
-  )
+  graphqlExpress(req => {
+    console.log("User from token", req && req.user);
+    const currentUserId = req && req.user && req.user.userId;
+
+    return {
+      schema,
+      context: {
+        currentUserId
+      } as ResolverContext
+    };
+  })
 );
 
 // GraphiQL, a visual editor for queries

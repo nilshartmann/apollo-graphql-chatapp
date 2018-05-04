@@ -136,10 +136,8 @@ const resolvers = {
       args: { searchString: string; first: number; after?: string },
       context: ResolverContext
     ): SearchMessagesResultConnection => {
-      console.log("search for " + JSON.stringify(args, null, 2) + ", CONTEXT", context);
-
       // workaround...
-      const theUserId = "u6";
+      const theUserId = context.currentUserId || "u6";
 
       const messagesFound: Message[] = [];
 
