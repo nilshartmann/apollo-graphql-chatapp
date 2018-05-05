@@ -60,37 +60,52 @@ function ChatPage(props: ChatPageProps) {
   );
 }
 
-export default function App() {
-  return (
-    <React.Fragment>
-      <Grid className={styles.AppFrame}>
-        <Header />
+interface AppState {
+  theme: string;
+}
+export default class App extends React.Component<{}, AppState> {
+  state: AppState = {
+    theme: "DefaultTheme"
+  };
 
-        <ProtectedRoute path="/channel" render={routerProps => <ChatPage {...routerProps} />} />
-        <Route exact path="/" render={() => <Redirect to="/channel" />} />
-        <ProtectedRoute
-          exact
-          path="/search"
-          render={routerProps => (
-            <Row className={styles.ChannelListRow}>
-              <Col>
-                <Search {...routerProps} />
-              </Col>
-            </Row>
-          )}
-        />
-        <Route exact path="/login" component={Login} />
-        <Route
-          exact
-          path="/logout"
-          render={() => {
-            clearLocalAuth();
-            return <Redirect to="/" />;
-          }}
-        />
+  onThemeSelected = (theme: string) => {
+    this.setState({ theme });
+  };
 
-        <Footer />
-      </Grid>
-    </React.Fragment>
-  );
+  render() {
+    const themeClass = styles[this.state.theme];
+
+    return (
+      <div className={themeClass}>
+        <Grid className={styles.AppFrame}>
+          <Header onThemeSelected={this.onThemeSelected} />
+
+          <ProtectedRoute path="/channel" render={routerProps => <ChatPage {...routerProps} />} />
+          <Route exact path="/" render={() => <Redirect to="/channel" />} />
+          <ProtectedRoute
+            exact
+            path="/search"
+            render={routerProps => (
+              <Row className={styles.ChannelListRow}>
+                <Col>
+                  <Search {...routerProps} />
+                </Col>
+              </Row>
+            )}
+          />
+          <Route exact path="/login" component={Login} />
+          <Route
+            exact
+            path="/logout"
+            render={() => {
+              clearLocalAuth();
+              return <Redirect to="/" />;
+            }}
+          />
+
+          <Footer />
+        </Grid>
+      </div>
+    );
+  }
 }

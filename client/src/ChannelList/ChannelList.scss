@@ -7,8 +7,9 @@
     @include card();
 
     &.active {
-      background-color: $color-one;
-      color: $color-light;
+      // background-color: var(--color-one);
+      background-color: var(--color-one);
+      color: var(--color-light);
       cursor: default;
     }
 
@@ -16,7 +17,7 @@
       @include clickable();
 
       .latestMessageAbstractDraft {
-        color: $color-one;
+        color: var(--color-one);
       }
     }
 

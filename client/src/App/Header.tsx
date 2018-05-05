@@ -7,10 +7,13 @@ import { Grid, Row, Col } from "../layout/index";
 import { CurrentUser } from "../components";
 import { Link, RouteComponentProps } from "react-router-dom";
 import Avatar from "../components/Avatar";
+import ThemeChooser from "./ThemeChooser";
 
-interface HeaderProps extends RouteComponentProps<void> {}
+interface HeaderProps extends RouteComponentProps<void> {
+  onThemeSelected(theme: string): void;
+}
 
-function Header({ history }: HeaderProps) {
+function Header({ history, onThemeSelected }: HeaderProps) {
   let searchInput: HTMLInputElement | null = null;
 
   const onSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -43,6 +46,12 @@ function Header({ history }: HeaderProps) {
           type="text"
           placeholder="Search"
           onKeyPress={onSearchKeyPress}
+        />
+      </Col>
+      <Col xs={1}>
+        <ThemeChooser
+          onThemeSelected={onThemeSelected}
+          themes={["DefaultTheme", "EvergladeTheme", "ToryBlueTheme", "RoyalHealthTheme"]}
         />
       </Col>
       <Col xs="auto">

@@ -15,20 +15,17 @@
   }
 
   body {
-    color: $color-text;
     font-family: "Source Sans Pro", sans-serif;
     background-color: #f2f2f2;
   }
 
   a {
-    color: $color-text;
     text-decoration: none;
 
     &:hover,
     &:active,
     &:focus {
       cursor: pointer;
-      color: $color-text;
       text-decoration: none;
     }
   }
@@ -56,22 +53,17 @@
     outline: none;
   }
 
-  input,
-  button {
-    color: $color-text;
-  }
-
   ::-webkit-scrollbar-track {
-    background-color: $color-light;
+    background-color: var(--color-light);
   }
 
   ::-webkit-scrollbar {
     width: 10px;
-    background-color: $color-light;
+    background-color: var(--color-light);
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: $color-one;
+    background-color: var(--color-one);
   }
 
   #chat-app {
@@ -79,16 +71,90 @@
   }
 }
 
+@mixin set-text-color() {
+  color: var(--color-text);
+  // background-color: var(--color-background);
+  input,
+  button {
+    color: var(--color-text);
+  }
+  a {
+    color: var(--color-text);
+
+    &:hover,
+    &:active,
+    &:focus {
+      color: var(--color-text);
+    }
+  }
+}
+
+.DefaultTheme {
+  --color-one: #fb49a6;
+  --color-light: #fff6ea;
+  --color-text: #7e6f83;
+  --color-text-light: #bdb5c0; // TODO: lighten 20%
+  --color-background: #ffdba7;
+
+  @include set-text-color();
+}
+
+.ToryBlueTheme {
+  --color-one: rgb(13, 100, 157);
+  --color-light: rgb(238, 232, 219);
+  --color-text: rgb(20, 83, 134);
+  --color-text-light: #bdb5c0; // TODO: lighten 20%
+  --color-background: rgba(20, 83, 134, 0.185);
+
+  @include set-text-color();
+}
+
+:global {
+  .DefaultTheme-Icon {
+    background-color: #fb49a6;
+  }
+  .ToryBlueTheme-Icon {
+    background-color: rgb(13, 100, 157);
+  }
+
+  .RoyalHealthTheme-Icon {
+    background-color: rgb(150, 40, 119);
+  }
+
+  .EvergladeTheme-Icon {
+    background-color: rgb(36, 83, 56);
+  }
+}
+
+.RoyalHealthTheme {
+  --color-one: rgb(150, 40, 119);
+  --color-light: rgb(230, 217, 212);
+  --color-text: rgb(64, 43, 72);
+  --color-text-light: #bdb5c0; // TODO: lighten 20%
+  --color-background: rgb(230, 217, 212);
+
+  @include set-text-color();
+}
+
+.EvergladeTheme {
+  --color-one: rgb(36, 83, 56);
+  --color-light: rgb(161, 217, 255);
+  --color-text: rgb(36, 83, 56);
+  --color-text-light: #bdb5c0; // TODO: lighten 20%
+  --color-background: #d3edff;
+
+  @include set-text-color();
+}
+
 .AppFrame {
   height: 100vh;
   overflow: hidden;
-  // background-color: $color-one;
   padding: 0rem 2rem 1rem 2rem;
-  background-color: $color-background;
+  background-color: var(--color-background);
 }
 
 .Header {
-  background-color: $color-one;
+  background-color: var(--color-one);
   height: 4rem;
   margin-bottom: 2rem;
   padding: 0.7rem 0;
@@ -99,7 +165,7 @@
   h1 {
     font-size: 2.5rem;
     font-weight: bold;
-    color: $color-light;
+    color: var(--color-light);
     margin-bottom: 0;
   }
 
@@ -117,7 +183,7 @@
       font-size: 2rem;
       font-weight: normal;
       margin-bottom: 0;
-      color: $color-light;
+      color: var(--color-light);
     }
   }
 }
@@ -133,8 +199,7 @@
 
 .Footer {
   height: 1.5rem;
-  border-top: 4px solid $color-one;
-  // background-color: $color-one;
+  border-top: 4px solid var(--color-one);
   padding-top: 0.6rem;
   text-align: center;
   h3 {
@@ -142,11 +207,11 @@
     font-size: 1rem;
     font-weight: 100;
     margin-bottom: 0;
-    color: $color-one;
+    color: var(--color-one);
     letter-spacing: 0.5px;
 
     a {
-      color: $color-one;
+      color: var(--color-one);
       text-decoration: none;
 
       &:hover {

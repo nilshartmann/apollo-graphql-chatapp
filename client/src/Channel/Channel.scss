@@ -12,12 +12,12 @@
   margin-left: 0.5rem;
   margin-right: -0px;
 
-  color: $color-light;
-  background-color: $color-one;
+  color: var(--color-light);
+  background-color: var(--color-one);
 
   h1 {
     margin-bottom: 0;
-    color: $color-light;
+    color: var(--color-light);
   }
 }
 
@@ -35,7 +35,7 @@
     font-weight: lighter;
 
     a {
-      color: $color-one;
+      color: var(--color-one);
     }
   }
 }
