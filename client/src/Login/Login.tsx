@@ -97,7 +97,7 @@ export default class Login extends React.Component<LoginProps, LoginState> {
               <label htmlFor="password">Password</label>
               <Input
                 id="password"
-                type="text"
+                type="password"
                 name="password"
                 value={password}
                 onChange={this.onInputChange}
