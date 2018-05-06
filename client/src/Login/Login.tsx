@@ -78,7 +78,10 @@ export default class Login extends React.Component<LoginProps, LoginState> {
       <div className={styles.Login}>
         <Col xs={6}>
           <div className={styles.Form}>
-            <h1>Login</h1>
+            <div className={styles.Title}>
+              <h1>Login</h1>
+              <h2>Please login first</h2>
+            </div>
             <form>
               <label htmlFor="username">Username</label>
               <Input
