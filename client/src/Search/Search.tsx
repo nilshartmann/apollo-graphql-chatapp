@@ -14,11 +14,9 @@ import { UncontrolledEditor } from "../components/Editor";
 import { RouteComponentProps } from "react-router";
 import * as styles from "./Search.scss";
 
-const MAX_HITS_PER_PAGE = 7;
-
 const SEARCH_MESSAGES_QUERY = gql`
   query SearchMessagesQuery($searchString: String!, $after: String) {
-    searchMessages(searchString: $searchString, first: ${MAX_HITS_PER_PAGE}, after: $after) {
+    searchMessages(searchString: $searchString, first: 7, after: $after) {
       pageInfo {
         hasNextPage
         hasPreviousPage
