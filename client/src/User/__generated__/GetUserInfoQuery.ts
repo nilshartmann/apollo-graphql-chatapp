@@ -17,10 +17,15 @@ export interface GetUserInfoQueryResult_user_channels {
   owner: GetUserInfoQueryResult_user_channels_owner;  // The Owner of this Channel. Only Owners can administer a Channel and add and remove users from it
 }
 
+export interface GetUserInfoQueryResult_user_messages {
+  id: string;
+}
+
 export interface GetUserInfoQueryResult_user {
   id: string;
   name: string;  // The readable name
   channels: GetUserInfoQueryResult_user_channels[];
+  messages: GetUserInfoQueryResult_user_messages[];
 }
 
 export interface GetUserInfoQueryResult {

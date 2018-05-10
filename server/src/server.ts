@@ -65,11 +65,13 @@ app.use(
     console.log("User from token", req && req.user);
     const currentUserId = req && req.user && req.user.userId;
 
+    const context: ResolverContext = {
+      currentUserId
+    };
+
     return {
       schema,
-      context: {
-        currentUserId
-      } as ResolverContext
+      context
     };
   })
 );

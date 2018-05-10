@@ -25,6 +25,10 @@ const GET_USER_INFO_QUERY = gql`
           id
         }
       }
+
+      messages {
+        id
+      }
     }
   }
 `;
@@ -69,6 +73,7 @@ export default class Search extends React.Component<UserProps> {
                 <Col xs={4}>
                   <Avatar className={styles.Avatar} userId={theUser.id} />
                   <p>User Id: {theUser.id}</p>
+                  <p>{theUser.messages.length} Messages</p>
                 </Col>
 
                 <Col xs={4}>

@@ -17,6 +17,7 @@ const typeDefs = `
     name: String!
 
     channels: [Channel!]!
+    messages: [Message!]!
   }
 
   type Channel {
@@ -389,7 +390,12 @@ const resolvers = {
     }
   },
   User: {
-    channels: (obj: User) => channels.filter(c => c.members.find(m => m.id === obj.id) !== undefined)
+    channels: (obj: User) => channels.filter(c => c.members.find(m => m.id === obj.id) !== undefined),
+    messages: (obj: User) => {
+      let result: Message[] = [];
+      channels.forEach(c => result.push(...c.messages.filter(m => m.author.id === obj.id)));
+      return result;
+    }
   },
   Channel: {
     latestMessage: (obj: Channel) =>
