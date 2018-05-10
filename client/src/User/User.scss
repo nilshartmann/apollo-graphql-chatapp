@@ -1,0 +1,38 @@
+@import "../_vars";
+
+.UserTitle {
+  // display: flex;
+  // align-items: baseline;
+
+  h1 {
+    font-size: 4rem;
+    margin-right: 2rem;
+  }
+
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 3px solid var(--color-one);
+}
+
+.Avatar {
+  max-width: 60%;
+}
+
+.Channels {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+.ChannelLink {
+  @include card();
+  @include clickable();
+  margin-left: 8px;
+  padding: 1rem 2rem;
+  // font-size: 1.3rem;
+  // font-weight: bold;
+  // letter-spacing: 1px;
+  cursor: pointer;
+
+  width: 100%;
+}

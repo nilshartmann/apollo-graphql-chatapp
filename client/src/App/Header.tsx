@@ -57,10 +57,12 @@ function Header({ history, onThemeSelected }: HeaderProps) {
       <Col xs="auto">
         <CurrentUser>
           {({ id, name }) => (
-            <div className={styles.UserDisplay}>
-              <Avatar userId={id} />
-              <h3>{name}</h3>
-            </div>
+            <Link to={`/user/${id}`}>
+              <div className={styles.UserDisplay}>
+                <Avatar userId={id} />
+                <h3>{name}</h3>
+              </div>
+            </Link>
           )}
         </CurrentUser>
       </Col>

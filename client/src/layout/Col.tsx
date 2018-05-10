@@ -20,7 +20,7 @@ type Width = number | "auto";
 
 // taken from https://github.com/reactstrap/reactstrap/blob/7c5e690e985e62b8ac65f9de36abe27a351a48ac/src/Col.js
 interface ColProps extends React.HTMLProps<{}> {
-  align?: "center";
+  align?: "center" | "top";
   cssModule?: string;
   tag?: string;
 

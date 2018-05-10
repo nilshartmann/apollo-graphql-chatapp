@@ -11,6 +11,7 @@ import Footer from "./Footer";
 import ChannelList from "../ChannelList";
 import Channel from "../Channel";
 import Search from "../Search";
+import User from "../User";
 
 import { clearLocalAuth, hasLocalUserId } from "../authService";
 import Login from "../Login/Login";
@@ -89,6 +90,17 @@ export default class App extends React.Component<{}, AppState> {
               <Row className={styles.ChannelListRow}>
                 <Col>
                   <Search {...routerProps} />
+                </Col>
+              </Row>
+            )}
+          />
+          <ProtectedRoute
+            exact
+            path="/user/:userId"
+            render={routerProps => (
+              <Row className={styles.ChannelListRow}>
+                <Col>
+                  <User {...routerProps} />
                 </Col>
               </Row>
             )}

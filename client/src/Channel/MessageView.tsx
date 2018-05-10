@@ -19,7 +19,9 @@ export default function MessageView({ message, channel }: MessageViewProps) {
         <Avatar userId={message.author.id} />
       </Col>
       <Col>
-        <h1>{message.author.name}</h1>
+        <Link to={`/user/${message.author.id}`}>
+          <h1>{message.author.name}</h1>
+        </Link>
         <div className={styles.Text}>{message.text}</div>
         <div className={styles.Date}>
           {longDate(message.date)}
