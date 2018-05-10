@@ -20,6 +20,11 @@ export const clearLocalAuth = () => {
 
 export const getJwtToken = () => theStorage.getItem(AUTH_JWT_KEY);
 
+export const getAuthorizationHeader = () =>
+  getJwtToken() && {
+    authorization: `Bearer ${getJwtToken()}`
+  };
+
 export const getLocalUserId = () => theStorage.getItem(AUTH_ID_KEY);
 export const setLocalUserId = (authId: string) => theStorage.setItem(AUTH_ID_KEY, authId);
 export const hasLocalUserId = (): boolean => theStorage.getItem(AUTH_ID_KEY) !== null;

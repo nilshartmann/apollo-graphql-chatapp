@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import * as styles from "./ChannelList.scss";
 import * as classNames from "classnames";
 
 import { gql, gql as clientGql, SubscribeToMoreOptions } from "apollo-boost";
@@ -16,8 +15,9 @@ import { CurrentUser } from "../components";
 import { NewMessageSubscriptionResult, NewMessageSubscriptionResult_messageAdded } from "./__generated__/NewMessageSubscription";
 import { DraftMessage, SubscribeToMoreFn } from "../types";
 import { ChannelQueryResult, ChannelQueryResult_channel } from "../Channel/__generated__/ChannelQuery";
-
-import ChannelCard from "./ChannelCard";
+import ChannelManager from "./ChannelManager";
+import MessageCard from "./MessageCard";
+import { ChannelAddedSubscriptionResult } from "./__generated__/ChannelAddedSubscription";
 
 const NEW_MESSAGE_SUBSCRIPTION = gql`
   subscription NewMessageSubscription($channelIds: [String!]!) {
@@ -38,6 +38,29 @@ const NEW_MESSAGE_SUBSCRIPTION = gql`
   }
 `;
 
+const CHANNEL_ADDED_SUBSCRIPTION = gql`
+  subscription ChannelAddedSubscription {
+    addedToChannel {
+      id
+      title
+
+      owner {
+        id
+      }
+
+      latestMessage {
+        id
+        date
+        author {
+          id
+          name
+        }
+        text
+      }
+    }
+  }
+`;
+
 const DRAFT_MESSAGES_QUERY = clientGql`
   query GetDraftMessages {
     draftMessages @client {
@@ -52,6 +75,11 @@ const CHANNEL_LIST_QUERY = gql`
     channels(memberId: $memberId) {
       id
       title
+
+      owner {
+        id
+      }
+
       latestMessage {
         id
         date
@@ -66,6 +94,21 @@ const CHANNEL_LIST_QUERY = gql`
 `;
 
 function subscribeToNewMessages(subscribeToMore: SubscribeToMoreFn, channelIds: string[]) {
+  subscribeToMore({
+    document: CHANNEL_ADDED_SUBSCRIPTION,
+    updateQuery: (prev, { subscriptionData }) => {
+      // QUESTION: why is updatequery untyped ??? https://github.com/apollographql/apollo-client/issues/3391
+      const subscriptionResult = subscriptionData.data as ChannelAddedSubscriptionResult;
+      const prevQueryChannelResult: ChannelListQueryResult = prev as ChannelListQueryResult;
+
+      console.log("######## new CHANNEL");
+
+      return {
+        ...prevQueryChannelResult,
+        channels: [...prevQueryChannelResult.channels, subscriptionResult.addedToChannel]
+      };
+    }
+  });
   subscribeToMore({
     document: NEW_MESSAGE_SUBSCRIPTION,
     variables: {
@@ -136,6 +179,7 @@ export default function ChannelList({ match }: ChannelListProps) {
                   return (
                     <ChannelListWithData
                       subscribeToNewMessages={() => subscribeToNewMessages(subscribeToMore, subscribedChannelIds)}
+                      currentUserId={currentUserId}
                       currentChannelId={match.params.currentChannelId}
                       draftMessages={draftMessages}
                       channels={data.channels}
@@ -153,30 +197,33 @@ export default function ChannelList({ match }: ChannelListProps) {
 
 interface ChannelListWithDataProps {
   subscribeToNewMessages(): void;
+  currentUserId: string;
   currentChannelId: string;
   draftMessages: DraftMessage[];
   channels: ChannelListQueryResult_channels[];
 }
-
 class ChannelListWithData extends React.Component<ChannelListWithDataProps> {
   render() {
-    const { draftMessages, channels, currentChannelId } = this.props;
+    const { draftMessages, channels, currentUserId, currentChannelId } = this.props;
+
     const getDraftMessageForChannel = (channelId: string) => {
       const r = draftMessages.find(dm => dm.id === channelId);
       return r ? r.text : null;
     };
 
     return channels.map(channel => (
-      <ChannelCard
-        key={channel.id}
-        channelId={channel.id}
-        title={channel.title}
-        author={channel.latestMessage.author.name}
-        lastMessage={channel.latestMessage.text}
-        draftMessage={getDraftMessageForChannel(channel.id)}
-        date={channel.latestMessage.date}
-        active={channel.id === currentChannelId}
-      />
+      <div key={channel.id}>
+        <MessageCard
+          channelId={channel.id}
+          title={channel.title}
+          isOwner={channel.owner.id === currentUserId}
+          author={channel.latestMessage.author.name}
+          lastMessage={channel.latestMessage.text}
+          draftMessage={getDraftMessageForChannel(channel.id)}
+          date={channel.latestMessage.date}
+          active={channel.id === currentChannelId}
+        />
+      </div>
     ));
   }
 

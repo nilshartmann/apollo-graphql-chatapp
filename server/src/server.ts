@@ -9,9 +9,9 @@ import { createServer } from "http";
 import { execute, subscribe } from "graphql";
 
 import { graphqlExpress, graphiqlExpress } from "apollo-server-express";
-import { SubscriptionServer } from "subscriptions-transport-ws";
+import { SubscriptionServer, ConnectionContext } from "subscriptions-transport-ws";
 import { PubSub, withFilter } from "graphql-subscriptions";
-
+import { checkTokenFromHeader } from "./jwtutil";
 import schema, { ResolverContext } from "./api";
 
 // hmmm... 😱
@@ -74,14 +74,29 @@ app.use(
   })
 );
 
-// GraphiQL, a visual editor for queries
+// Add GraphiQL, a visual editor for queries
+
+// User "u6" is always used when making request from graphiql
+// not a good solution for real/production live but for
+// development purposes sufficent
+const theTokenForGraphiQLThatNeverExpires = jsonwebtoken.sign(
+  {
+    userId: "u6"
+  },
+  JWT_SECRET,
+  { expiresIn: "1y" }
+);
+
 app.use(
   "/graphiql",
   graphiqlExpress({
     endpointURL: "/graphql",
-    subscriptionsEndpoint: `ws://localhost:3000/subscriptions`
+    subscriptionsEndpoint: `ws://localhost:3000/subscriptions`,
+    passHeader: `'authorization': 'Bearer ${theTokenForGraphiQLThatNeverExpires}'`
   })
 );
+
+let CONNECTION_COUNT = 0;
 
 // Start the server
 const ws = createServer(app).listen(3000, () => {
@@ -90,7 +105,23 @@ const ws = createServer(app).listen(3000, () => {
     {
       execute,
       subscribe,
-      schema
+      schema,
+      onConnect: (connectionParams: any, websocket: any, context: ConnectionContext) => {
+        // https://github.com/apollographql/subscriptions-transport-ws/blob/master/docs/source/authentication.md
+        const counter = ++CONNECTION_COUNT;
+        console.log("onConnect #" + counter, connectionParams);
+
+        const token = checkTokenFromHeader(connectionParams.authorization, { secret: JWT_SECRET });
+
+        const resContext: ResolverContext = {
+          currentUserId: token.userId
+        };
+
+        return resContext;
+      },
+      onDisconnect: (webSocket: any, context: any) => {
+        console.log("onDisconnect", context);
+      }
     },
     {
       server: ws,

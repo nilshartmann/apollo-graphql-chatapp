@@ -1,48 +1,50 @@
 import * as React from "react";
 
-import * as styles from "./ChannelList.scss";
+import * as styles from "./MessageCard.scss";
 import * as classNames from "classnames";
 import { Row, Col } from "../layout";
 import { Link } from "react-router-dom";
 import { timeOnly } from "../utils";
 
-interface ChannelCardProps {
+import ArrowButton from "../components/ArrowButton";
+
+interface MessageCardProps {
   channelId: string;
   title: string;
   author: string;
   lastMessage: string;
   date: string;
   active?: boolean;
-  unreadMessageCount?: number;
   draftMessage?: string | null;
+  isOwner: boolean;
 }
 
-export default function ChannelCard({
+export default function MessageCard({
   channelId,
   title,
   active = false,
   author,
   lastMessage,
   date,
-  unreadMessageCount,
-  draftMessage
-}: ChannelCardProps) {
-  const classnames = classNames(styles.ChannelCardContent, { [styles.active]: active });
+  draftMessage,
+  isOwner
+}: MessageCardProps) {
+  const classnames = classNames(styles.MessageCardContent, { [styles.active]: active });
 
   const text = draftMessage ? draftMessage : `${author}: ${lastMessage}`;
 
   return (
     <Link to={`/channel/${channelId}`}>
-      <Row className={styles.ChannelCard}>
+      <Row className={styles.MessageCard}>
         <Col className={classnames}>
           <div style={{ display: "flex", flexDirection: "column" }}>
             <Row>
               <Col>
                 <h1>{title}</h1>
               </Col>
-              {unreadMessageCount && (
+              {isOwner && (
                 <Col xs="auto">
-                  <div className={styles.UnreadMessageCounter}>{unreadMessageCount}</div>
+                  <div className={styles.OwnerBadge}>Owner</div>
                 </Col>
               )}
             </Row>

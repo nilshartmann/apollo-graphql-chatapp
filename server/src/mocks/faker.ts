@@ -1,6 +1,5 @@
 import lorems from "./lorems";
 import users from "./users";
-
 const CHANNELS = [
   {
     title: "Bacon",
@@ -58,11 +57,13 @@ const arrayElements = function<T>(array: T[], count?: number) {
 };
 
 const fakeChannels = CHANNELS.map((c, ix) => {
-  // @ts-ignore bug in declaration
-  const members: User[] = arrayElements(users);
+  const owner = faker.random.arrayElement(users);
+  // make sure owner is contained in list and is first one in list
+  const members = [owner, ...arrayElements(users).filter(u => u.id !== owner.id)];
   return {
     id: `c${ix + 1}`,
     title: c.title,
+    owner,
     members,
     messages: faker.helpers
       .shuffle(c.lorems)

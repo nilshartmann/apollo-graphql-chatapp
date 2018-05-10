@@ -3,12 +3,13 @@ import * as ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 
 import ApolloClient, { gql } from "./boost_patch/ApolloClientWithWebsockets";
+import { WebSocketLink } from "apollo-link-ws";
 import { ApolloProvider } from "react-apollo";
 import App from "./App";
 import { ApolloCache } from "apollo-cache";
 
 import * as Resolvers from "./resolvers";
-import { setLocalUserId, getJwtToken } from "./authService";
+import { setLocalUserId, getAuthorizationHeader } from "./authService";
 
 // setLocalAuthId("u3");
 
@@ -19,15 +20,18 @@ const client = new ApolloClient({
     credentials: "include"
   },
   request: async operation => {
-    const token = getJwtToken();
-    if (token) {
-      operation.setContext({
-        headers: {
-          authorization: `Bearer ${token}`
-        }
-      });
-    }
+    operation.setContext({
+      headers: { ...getAuthorizationHeader() }
+    });
   },
+  webSocketLink: new WebSocketLink({
+    uri: `ws://localhost:3000/subscriptions`,
+    options: {
+      lazy: true,
+      reconnect: true,
+      connectionParams: getAuthorizationHeader
+    }
+  }),
   clientState: {
     defaults: Resolvers.defaults,
     resolvers: Resolvers.resolvers

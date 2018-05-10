@@ -1,9 +1,9 @@
 @import "../vars";
-.ChannelCard {
+.MessageCard {
   margin-left: -13px;
   margin-right: -10px;
 
-  .ChannelCardContent {
+  .MessageCardContent {
     @include card();
 
     &.active {
@@ -46,5 +46,17 @@
         font-weight: lighter;
       }
     }
+  }
+}
+
+.OwnerBadge {
+  font-size: 80%;
+  padding: 2px 4px;
+  background-color: var(--color-one);
+  color: var(--color-light);
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
   }
 }

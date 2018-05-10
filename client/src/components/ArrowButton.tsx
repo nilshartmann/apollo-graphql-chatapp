@@ -7,7 +7,7 @@ const Icons = {
 };
 
 interface ArrowButtonProps extends React.ImgHTMLAttributes<{}> {
-  onClick: () => void;
+  onClick: React.MouseEventHandler<HTMLImageElement>;
   direction: "up" | "down";
 }
 

@@ -7,6 +7,10 @@
 // GraphQL query operation: ChannelListQuery
 // ====================================================
 
+export interface ChannelListQueryResult_channels_owner {
+  id: string;
+}
+
 export interface ChannelListQueryResult_channels_latestMessage_author {
   id: string;
   name: string;  // The readable name
@@ -22,6 +26,7 @@ export interface ChannelListQueryResult_channels_latestMessage {
 export interface ChannelListQueryResult_channels {
   id: string;                                              // Unique identifier
   title: string;                                           // Human-readable title of this Channel
+  owner: ChannelListQueryResult_channels_owner;                  // The Owner of this Channel. Only Owners can administer a Channel and add and remove users from it
   latestMessage: ChannelListQueryResult_channels_latestMessage;  // The newest message that have been posted to this channel
 }
 

@@ -23,6 +23,12 @@ const typeDefs = `
     """Unique identifier"""
     id: String!
 
+    """
+    The Owner of this Channel.
+    Only Owners can administer a Channel and add and remove users from it
+    """
+    owner: User!
+
     """Human-readable title of this Channel"""
     title: String!
     members: [User!]!
@@ -60,6 +66,9 @@ const typeDefs = `
     """All Channels that contain the specified Member"""
     channels(memberId: String): [Channel!]! 
 
+    """Return the currently logged in user if logged in"""
+    me: User
+
     """The User with the specified id"""
     user(userId: String!): User
 
@@ -81,10 +90,13 @@ const typeDefs = `
 
   type Mutation {
     postMessage(channelId: String!, authorId: String!, message: String!): Message!
+    createChannel(title: String!, firstMessage: String!, initalMemberIds: [String!]!): Channel!
+    addMembersToChannel(channelId: String!, memberIds: [String!]!): Channel!
   }
 
   type Subscription {
     messageAdded(channelIds: [String!]!): Message!
+    addedToChannel: Channel!
   }
 `;
 
@@ -96,6 +108,8 @@ interface User {
 interface Channel {
   id: string;
   title: string;
+  owner: User;
+  members: User[];
   messages: Message[];
 }
 
@@ -121,7 +135,24 @@ interface SearchMessagesResultConnection {
   pageInfo: PageInfo;
 }
 
+function userIdFromRequest(context: ResolverContext) {
+  const theUserId = context.currentUserId;
+  if (!theUserId) {
+    throw new Error("Missing user id in request (not authenticated?)");
+  }
+
+  // if (userId && userId !== theUserId) {
+  //   throw new Error(`User-Id '${theUserId}' from request is not allowed to access this resource from user '${userId}'`);
+  // }
+
+  return theUserId;
+}
+
 let messageIdCounter = 10000;
+// note that the eventemitter is not for production use
+// (see: https://github.com/apollographql/graphql-subscriptions#getting-started-with-your-first-subscription)
+// we may get Possible EventEmitter memory leak detected messages
+// we could switch to postgres-based ee: https://github.com/GraphQLCollege/graphql-postgres-subscriptions
 const pubsub = new PubSub();
 // The resolvers
 const resolvers = {
@@ -131,14 +162,26 @@ const resolvers = {
     channel: (obj: any, args: { channelId: string }) => channels.find(c => c.id === args.channelId),
     users: () => users,
     user: (obj: any, args: { userId: string }) => users.find(u => u.id === args.userId),
+    me: (_: any, args: any, context: ResolverContext) => {
+      const theUserId = context.currentUserId;
+
+      if (!theUserId) {
+        return;
+      }
+
+      const user = users.find(u => u.id === theUserId);
+      if (user) {
+        return user;
+      }
+
+      throw new Error(`User with id '${theUserId}' not found`);
+    },
     searchMessages: (
       _: any,
       args: { searchString: string; first: number; after?: string },
       context: ResolverContext
     ): SearchMessagesResultConnection => {
-      // workaround...
-      const theUserId = context.currentUserId || "u6";
-
+      const theUserId = userIdFromRequest(context);
       const messagesFound: Message[] = [];
 
       channels
@@ -220,25 +263,129 @@ const resolvers = {
       });
 
       return newMessage;
+    },
+    // createChannel(title: String!, firstMessage: String!, initialMembers: [String!]!): Channel!
+    createChannel: (
+      _: any,
+      args: { title: string; firstMessage: string; initalMemberIds: string[] },
+      context: ResolverContext
+    ) => {
+      const currentUserId = userIdFromRequest(context);
+
+      const getUserById = (id: string) => {
+        const user = users.find(u => u.id === id);
+        if (user) {
+          return user;
+        }
+
+        throw new Error(`User with id '${id}' not found`);
+      };
+
+      const owner = getUserById(currentUserId);
+
+      const newMessage: Message = {
+        id: `m${messageIdCounter++}`,
+        text: args.firstMessage,
+        date: new Date().toISOString(),
+        author: owner
+      };
+
+      const newChannel: Channel = {
+        id: `c${channels.length + 1}`,
+        owner,
+        title: args.title,
+        messages: [newMessage],
+        members: args.initalMemberIds.map(im => getUserById(im))
+      };
+
+      channels.push(newChannel);
+
+      pubsub.publish("addedToChannel", {
+        channel: newChannel,
+        newMemberIds: newChannel.members.map(m => m.id)
+      });
+
+      return newChannel;
+    },
+    addMembersToChannel: (_: any, args: { channelId: string; memberIds: string[] }, context: ResolverContext) => {
+      const currentUserId = userIdFromRequest(context);
+
+      const theChannel = channels.find(c => c.id === args.channelId);
+      if (!theChannel) {
+        throw new Error(`Channel with id '${args.channelId} not found`);
+      }
+      if (currentUserId !== "u6" && theChannel.owner.id !== currentUserId) {
+        throw new Error(
+          `Current user '${currentUserId} not owner of channel '${theChannel.id}' (owner is: '${theChannel.owner.id})`
+        );
+      }
+
+      const newMembers: User[] = [];
+
+      args.memberIds.forEach(mId => {
+        const user = users.find(u => u.id === mId);
+        if (!user) {
+          console.log(`User-Id '${mId}' not found`);
+          // ignore unknown users. caller of this mutation
+          // "sees" this when looking into the returned new
+          // Channel object
+          return;
+        }
+
+        const isNewMember =
+          theChannel.members.findIndex(nm => nm.id === mId) === -1 && newMembers.findIndex(nm => nm.id === mId) === -1;
+        if (isNewMember) {
+          console.log("new member in channel:" + user.id);
+          newMembers.push(user);
+        }
+      });
+
+      theChannel.members = [...theChannel.members, ...newMembers];
+
+      console.log("newMembers: ", newMembers.map(m => m.id));
+
+      pubsub.publish("addedToChannel", {
+        channel: theChannel,
+        newMemberIds: newMembers.map(m => m.id)
+      });
+
+      return theChannel;
     }
   },
   Subscription: {
     messageAdded: {
       resolve: (payload: any) => {
         const value = payload.messageAdded;
-        // console.log("PAYLOAD", payload);
-        // console.log("VALUE", value);
         return value;
       },
-      subscribe:
-        console.log("subscribe") ||
-        withFilter(
-          () => pubsub.asyncIterator("messageAdded"),
-          ({ channel }: { channel: any }, { channelIds }: { channelIds: string[] }) => {
-            console.log("subscribe", channelIds);
-            return channelIds.includes(channel.id);
+      subscribe: withFilter(
+        () => pubsub.asyncIterator("messageAdded"),
+        ({ channel }: { channel: any }, { channelIds }: { channelIds: string[] }) => {
+          console.log("subscribe", channelIds);
+          return channelIds.includes(channel.id);
+        }
+      )
+    },
+    addedToChannel: {
+      resolve: (payload: any) => {
+        const { channel, newMemberIds } = payload;
+        return channel;
+      },
+      subscribe: withFilter(
+        () => pubsub.asyncIterator("addedToChannel"),
+        (rootValue: any, args: any, context: ResolverContext) => {
+          console.log("### rootValue", rootValue);
+          console.log("### context", context);
+
+          const { currentUserId } = context;
+          const newMemberIds: String[] = rootValue.newMemberIds;
+          console.log("### rootValue.newMembersIds", rootValue.newMemberIds);
+          if (!currentUserId) {
+            return false;
           }
-        )
+          return newMemberIds.includes(currentUserId);
+        }
+      )
     }
   },
   User: {

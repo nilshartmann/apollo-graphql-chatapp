@@ -33,19 +33,17 @@ export interface PresetConfig {
 // https://github.com/apollographql/apollo-client/issues/3024
 // see: https://github.com/apollographql/apollo-client/issues/3117
 
-import { WebSocketLink } from "apollo-link-ws";
 import { split } from "apollo-link";
 import { getMainDefinition } from "apollo-utilities";
-const wsLink = new WebSocketLink({
-  uri: `ws://localhost:3000/subscriptions`,
-  options: {
-    reconnect: true
-  }
-});
+import { WebSocketLink } from "apollo-link-ws";
+interface PresetConfigWithWSLink extends PresetConfig {
+  webSocketLink: WebSocketLink;
+}
+
 // ---------
 
 export default class DefaultClient<TCache> extends ApolloClient<TCache> {
-  constructor(config: PresetConfig) {
+  constructor(config: PresetConfigWithWSLink) {
     const cache =
       config && config.cacheRedirects ? new InMemoryCache({ cacheRedirects: config.cacheRedirects }) : new InMemoryCache();
 
@@ -105,7 +103,7 @@ export default class DefaultClient<TCache> extends ApolloClient<TCache> {
         // const { kind, operation } = getMainDefinition(query);
         // return kind === "OperationDefinition" && operation === "subscription";
       },
-      wsLink,
+      config.webSocketLink,
       httpLink
     );
 
