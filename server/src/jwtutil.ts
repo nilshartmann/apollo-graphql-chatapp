@@ -47,6 +47,5 @@ export function checkTokenFromHeader(authHeader: string, options: Options): Toke
     console.error(err);
     throw new Error("Invalid token: " + err);
   }
-  console.log("decoded", decoded);
   return decoded as Token;
 }

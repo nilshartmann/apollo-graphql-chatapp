@@ -101,8 +101,6 @@ function subscribeToNewMessages(subscribeToMore: SubscribeToMoreFn, channelIds: 
       const subscriptionResult = subscriptionData.data as ChannelAddedSubscriptionResult;
       const prevQueryChannelResult: ChannelListQueryResult = prev as ChannelListQueryResult;
 
-      console.log("######## new CHANNEL");
-
       return {
         ...prevQueryChannelResult,
         channels: [...prevQueryChannelResult.channels, subscriptionResult.addedToChannel]
@@ -118,10 +116,6 @@ function subscribeToNewMessages(subscribeToMore: SubscribeToMoreFn, channelIds: 
       // QUESTION: why is updatequery untyped ??? https://github.com/apollographql/apollo-client/issues/3391
       const subscriptionResult = subscriptionData.data as NewMessageSubscriptionResult;
       const prevQueryChannelResult: ChannelListQueryResult = prev as ChannelListQueryResult;
-
-      console.log("UPDATE QUERY prev:", prev);
-      console.log("UPDATE QUERY data", subscriptionData.data);
-
       if (!subscriptionResult) return prevQueryChannelResult;
 
       const newChannels = prevQueryChannelResult.channels.map(

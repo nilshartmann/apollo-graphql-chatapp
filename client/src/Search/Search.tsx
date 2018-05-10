@@ -72,7 +72,6 @@ export default class Search extends React.Component<SearchProps, SearchState> {
     const { searchString } = this.state;
 
     const skipQuery = !searchString;
-    console.log("skipQuery: ", skipQuery);
 
     return (
       <React.Fragment>

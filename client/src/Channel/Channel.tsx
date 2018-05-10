@@ -47,10 +47,6 @@ export default class Channel extends React.Component<ChannelProps> {
         const subscriptionResult = subscriptionData.data as OnNewMessageSubscriptionResult;
         const prevQueryChannelResult = prev as ChannelQueryResult;
 
-        console.log("CHANNEL UPDATE QUERY cId:", currentChannelId);
-        console.log("CHANNEL UPDATE QUERY prev:", prev);
-        console.log("CHANNEL UPDATE QUERY data", subscriptionData.data);
-
         if (!subscriptionResult) return prevQueryChannelResult;
         if (!prevQueryChannelResult.channel) return prevQueryChannelResult;
 
@@ -136,9 +132,6 @@ export default class Channel extends React.Component<ChannelProps> {
         if (!existingChannel || !existingChannel.channel) {
           return;
         }
-
-        console.log("exstingChannel.channel");
-        console.dir(existingChannel.channel);
 
         if (!existingChannel.channel.messages.find(m => m.id === postMessage.id)) {
           console.log("Message add!");
