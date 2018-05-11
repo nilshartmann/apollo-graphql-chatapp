@@ -1,8 +1,8 @@
 const { makeExecutableSchema } = require("graphql-tools");
 
 import { PubSub, withFilter } from "graphql-subscriptions";
-import users from "./mocks/users";
 import channels from "./mocks/faker";
+import users from "./mocks/users";
 
 export interface ResolverContext {
   currentUserId?: string;
@@ -11,9 +11,10 @@ export interface ResolverContext {
 // The GraphQL schema in string form
 const typeDefs = `
   type User {
+    """A **unique** userId that is used to identify a user"""
     id: String!,
 
-    """The readable name"""
+    """The name that is used to login"""
     name: String!
 
     channels: [Channel!]!
