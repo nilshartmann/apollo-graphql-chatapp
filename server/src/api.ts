@@ -20,6 +20,9 @@ const typeDefs = `
     messages: [Message!]!
   }
 
+  """A **Channel** represents a collection of **Messages**
+  Only members of a Channel can post messages to it.
+  """
   type Channel {
     """Unique identifier"""
     id: String!
@@ -79,24 +82,48 @@ const typeDefs = `
     """The Channel with the given id"""
     channel(channelId: String!): Channel
 
-    # https://facebook.github.io/relay/graphql/connections.htm
+    #
     """Searches for messsages that contain the specified search string
     
     All channels **the current user belongs to** are searched.
     If there is no logged in user, nothing will be searched.
     
+    For the underlying **connection model** that is used for the
+    response see here: https://facebook.github.io/relay/graphql/connections.htm
+
     """
     searchMessages(searchString: String!, first: Int = 10, after: String): SearchMessagesResultConnection!
   }
 
   type Mutation {
+    """Post a new Message to an existing channel"""
     postMessage(channelId: String!, authorId: String!, message: String!): Message!
+
+    """Creates a new Channel and initializes it with the specified members and a first message
+
+    Note: you must be **logged** in to be able to create a channel.
+    """
     createChannel(title: String!, firstMessage: String!, initalMemberIds: [String!]!): Channel!
+
+    """Add the specified members to an existing channel. Specified members,
+    that are either already part of the channel or do not exist are ignored.
+
+    **Note!** You need to be logged in and you need to be the owner of this Channel to be allowed
+    to add new members to a channel
+    """
     addMembersToChannel(channelId: String!, memberIds: [String!]!): Channel!
   }
 
   type Subscription {
+    """Subscribe to new Messages that are posted to one of the specified Channels.
+
+    If a new Message has been added to one of the Channels (\`channelIds\`) the
+    message is send to subscribers as payload.
+    """
     messageAdded(channelIds: [String!]!): Message!
+
+    """This subscribtion is triggered if the currently logged in user has been
+    added to a new channel."""
     addedToChannel: Channel!
   }
 `;
@@ -244,7 +271,11 @@ const resolvers = {
       }
       const channel = channels.find(c => c.id === args.channelId);
       if (!channel) {
-        throw new Error(`Channel with id ${args.authorId} not found`);
+        throw new Error(`Channel with id ${args.channelId} not found`);
+      }
+
+      if (channel.members.findIndex(m => m.id === author.id) === -1) {
+        throw new Error(`Author with id '${author.id}' is not member of Channel '${channel.id}`);
       }
 
       const newMessage: Message = {
