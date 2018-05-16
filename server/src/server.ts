@@ -111,7 +111,7 @@ const ws = createServer(app).listen(3000, () => {
       onConnect: (connectionParams: any, websocket: any, context: ConnectionContext) => {
         // https://github.com/apollographql/subscriptions-transport-ws/blob/master/docs/source/authentication.md
         const counter = ++CONNECTION_COUNT;
-        console.log("onConnect #" + counter, connectionParams);
+        // console.log("onConnect #" + counter, connectionParams);
 
         const token = checkTokenFromHeader(connectionParams.authorization, { secret: JWT_SECRET });
 
@@ -122,7 +122,7 @@ const ws = createServer(app).listen(3000, () => {
         return resContext;
       },
       onDisconnect: (webSocket: any, context: any) => {
-        console.log("onDisconnect", context);
+        // console.log("onDisconnect", context);
       }
     },
     {
