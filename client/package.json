@@ -19,7 +19,7 @@
     "url": "https://github.com/nilshartmann/react-typescript-starter.git"
   },
   "scripts": {
-    "start": "yarn devserver",
+    "start": "yarn devserver --host 0.0.0.0",
     "clean": "rimraf -rf public/dist/",
     "dist": "webpack",
     "webpack": "webpack --watch",
